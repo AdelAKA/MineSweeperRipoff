@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2cc90b0d4ee5c4fbf3ca67deed2db6, type: 3}
+  m_Name: Numbers
+  m_EditorClassIdentifier: 
+  numbersList:
+  - number: 0
+    icon: {fileID: 0}
+  - number: 1
+    icon: {fileID: 21300000, guid: d12e90aaadf26274e8df916e393d842d, type: 3}
+  - number: 2
+    icon: {fileID: 21300000, guid: b6c49523d1c48f7479f5a63532361686, type: 3}
+  - number: 3
+    icon: {fileID: 21300000, guid: cfe277bd89cdc23459e83f48b1591c38, type: 3}
+  - number: 4
+    icon: {fileID: 21300000, guid: 5bfc22a26543f7a4dad1911bfe7f71e6, type: 3}
+  - number: 5
+    icon: {fileID: 21300000, guid: 9a4ea57419d33cc4e86cec1e0cb56e1d, type: 3}
+  - number: 6
+    icon: {fileID: 21300000, guid: 593aee0463beaf24c822d47f598f86f8, type: 3}
+  - number: 7
+    icon: {fileID: 21300000, guid: ce4cd30e49b3e064b95f201349533cfe, type: 3}
+  - number: 8
+    icon: {fileID: 21300000, guid: f76191860d667de458cf68726f2f23b7, type: 3}
