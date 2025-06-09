@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MineSweeperRipeoff
@@ -67,7 +68,8 @@ namespace MineSweeperRipeoff
                 audioSource.volume -= Time.deltaTime;
                 try
                 {
-                    await Awaitable.NextFrameAsync(_musicCancelationTokenSource.Token);
+                    await Task.Delay(1);
+                    //await Awaitable.NextFrameAsync(_musicCancelationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {

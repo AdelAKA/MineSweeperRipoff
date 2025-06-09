@@ -137,8 +137,9 @@ namespace MineSweeperRipeoff
             var audioSource = GetAudioSourceOnGameObject(gameObject, clipName);
             if (audioSource != null && !checkIsPlaying || audioSource != null && checkIsPlaying && !audioSource.isPlaying)
             {
-                //await Task.Delay((int)(time * 1000.0f));
-                await Awaitable.WaitForSecondsAsync(time);
+                await Task.Delay((int)(time * 1000.0f));
+                //await Awaitable.WaitForSecondsAsync(time);
+
                 audioSource.Play();
                 audioSource.loop = loop;
                 return time + chainTime;
@@ -159,8 +160,8 @@ namespace MineSweeperRipeoff
             if (audioSource != null && !checkIsPlaying || audioSource != null && checkIsPlaying && !audioSource.isPlaying)
             {
                 var time = audioClipDict[otherClipName].length;
-                //await Task.Delay((int)(time * 1000.0f));
-                await Awaitable.WaitForSecondsAsync(time);
+                await Task.Delay((int)(time * 1000.0f));
+                //await Awaitable.WaitForSecondsAsync(time);
                 audioSource.Play();
                 audioSource.loop = loop;
                 return time + chainTime;
