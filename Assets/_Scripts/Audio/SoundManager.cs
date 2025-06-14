@@ -63,7 +63,7 @@ namespace MineSweeperRipeoff
             _musicCancelationTokenSource = new CancellationTokenSource();
 
             AudioSource audioSource = _musicAudioSource.GetComponent<AudioSource>();
-            while (audioSource.volume > 0)
+            while (audioSource != null && audioSource.volume > 0)
             {
                 audioSource.volume -= Time.deltaTime;
                 try
@@ -76,6 +76,7 @@ namespace MineSweeperRipeoff
                     return;
                 }
             }
+            if (audioSource == null) return;
             audioSource.Stop();
             audioSource.clip = GetAudioClip(clipName);
             audioSource.volume = 1;
