@@ -10,13 +10,13 @@ namespace MineSweeperRipeoff
     public class FieldCell : MonoBehaviour, IPointerClickHandler
     {
         [Header("Resource")]
-        [SerializeField] NumbersCollection numbersCollection;
+        [SerializeField] protected NumbersCollection numbersCollection;
         [SerializeField] public Sprite flagSprite;
         [SerializeField] public Sprite mineSprite;
 
         [Header("Settings")]
-        [SerializeField] private Color clickedMineColor;
-        [SerializeField] private Color revealedMineColoer;
+        [SerializeField] protected Color clickedMineColor;
+        [SerializeField] protected Color revealedMineColoer;
 
         [Header("Cell Body")]
         [SerializeField] public Image ClosedCellImage;
@@ -53,7 +53,7 @@ namespace MineSweeperRipeoff
             contentImage.enabled = false;
         }
 
-        private void Event_UpdateCellContent(int sequenceCount)
+        protected virtual void Event_UpdateCellContent(int sequenceCount)
         {
             if (isDebug) Debug.Log("Update Cell Content");
             ClosedCellImage.enabled = false;
@@ -89,7 +89,7 @@ namespace MineSweeperRipeoff
             }
         }
 
-        private void Event_UpdateFlagState(bool isFlagged)
+        protected virtual void Event_UpdateFlagState(bool isFlagged)
         {
             if (isDebug) Debug.Log("Update Flag State");
 
@@ -123,7 +123,7 @@ namespace MineSweeperRipeoff
             GameManager.Instance.UpdateCellFlagState(referencedCell.coordinates);
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public virtual void OnPointerClick(PointerEventData eventData)
         {
             if (GameManager.Instance.CurrentGridState > GridState.Playing) return;
 

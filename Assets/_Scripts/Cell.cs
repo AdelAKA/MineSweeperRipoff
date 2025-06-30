@@ -18,6 +18,16 @@ namespace MineSweeperRipeoff
         public Vector2Int coordinates;
         public bool isLosingCell;
 
+        public Cell(Cell copy)
+        {
+            this.coordinates = copy.coordinates;
+            this.cellType = copy.cellType;
+            isRevealed = false;
+            isFlagged = false;
+            this.number = copy.number;
+            isLosingCell = false;
+        }
+
         public Cell(Vector2Int coordinates)
         {
             this.coordinates = coordinates;

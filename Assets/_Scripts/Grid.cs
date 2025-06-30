@@ -9,11 +9,11 @@ namespace MineSweeperRipeoff
     [Serializable]
     public class Grid
     {
-        [SerializeField] private bool isDebug;
+        [SerializeField] protected bool isDebug;
         public Vector2Int gridSize;
         public int numberOfMines;
 
-        public UnityEvent<GridState> OnGridStateChanged;
+        public UnityEvent<GridState> OnGridStateChanged = new UnityEvent<GridState>();
         private GridState _currentState;
         public GridState CurrentState
         {
@@ -26,12 +26,12 @@ namespace MineSweeperRipeoff
         }
         public int RemainingMines { get; private set; }
 
-        private bool isFirstMove;
-        private Cell[,] cells;
-        private int numberOfRevealedCells;
+        protected bool isFirstMove;
+        protected Cell[,] cells;
+        protected int numberOfRevealedCells;
         private List<Vector2Int> availableCellsForMines;
 
-        private List<Vector2Int> DirectionsList = new List<Vector2Int>()
+        protected List<Vector2Int> DirectionsList = new List<Vector2Int>()
         {
             new Vector2Int( 0,  0),
             new Vector2Int( 0,  1),
@@ -44,7 +44,37 @@ namespace MineSweeperRipeoff
             new Vector2Int(-1, -1),
         };
 
+        public virtual bool ShouldDelay => !PlayerData.IsSpeedRunMode;
         public Cell GetCell(Vector2Int targetCoordinates) => cells[targetCoordinates.x, targetCoordinates.y];
+        public Cell[,] GetCopyOfCells()
+        {
+            Cell[,] cellsCopy = new Cell[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    cellsCopy[i, j] = new Cell(cells[i, j]);
+                }
+            }
+            return cellsCopy;
+        }
+
+        public Grid() { }
+
+        public Grid(Grid copy)
+        {
+            this.gridSize = copy.gridSize;
+            this.numberOfMines = copy.numberOfMines;
+
+            isFirstMove = true;
+            CurrentState = GridState.NotStarted;
+            numberOfRevealedCells = 0;
+            OnGridStateChanged.RemoveAllListeners();
+            RemainingMines = numberOfMines;
+
+            cells = copy.GetCopyOfCells();
+        }
 
         public void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
         {
@@ -90,7 +120,7 @@ namespace MineSweeperRipeoff
             }
         }
 
-        private bool IsWithinRange(Vector2Int coordinates)
+        protected bool IsWithinRange(Vector2Int coordinates)
         {
             return coordinates.x >= 0
                     && coordinates.x < gridSize.x
@@ -262,8 +292,9 @@ namespace MineSweeperRipeoff
             return true;
         }
 
-        private bool TryRevealCell(Vector2Int coordinates)
+        protected bool TryRevealCell(Vector2Int coordinates)
         {
+            if (isDebug) Debug.Log($"try reveal {coordinates}");
             if (cells[coordinates.x, coordinates.y].cellType == CellType.Empty)
             {
                 RevealCellsRecursivley(coordinates, 1);
@@ -285,7 +316,7 @@ namespace MineSweeperRipeoff
             return true;
         }
 
-        private void RevealCell(Vector2Int coordinates, int sequenceCount)
+        protected virtual void RevealCell(Vector2Int coordinates, int sequenceCount)
         {
             cells[coordinates.x, coordinates.y].RevealCell(sequenceCount);
             if (cells[coordinates.x, coordinates.y].cellType != CellType.Mine)
@@ -309,7 +340,7 @@ namespace MineSweeperRipeoff
             RevealCell(coordinates, sequenceCount);
 
             //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(0.05f);
-            if (!PlayerData.IsSpeedRunMode) await Task.Delay(50);
+            if(ShouldDelay) await Task.Delay(50);
 
             foreach (var direction in DirectionsList)
             {
@@ -348,7 +379,7 @@ namespace MineSweeperRipeoff
                     if (cells[i, j].cellType == CellType.Mine && !cells[i, j].isRevealed)
                     {
                         //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(TimeToWait);
-                        if (!PlayerData.IsSpeedRunMode) await Task.Delay((int)(TimeToWait * 1000));
+                        if (ShouldDelay) await Task.Delay((int)(TimeToWait * 1000));
 
                         TimeToWait *= 0.8f;
                         if (cells[i, j].isFlagged) cells[i, j].SetFlagState(false);
