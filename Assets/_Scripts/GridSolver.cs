@@ -144,6 +144,101 @@ namespace MineSweeperRipeoff
             return isGridChanged;
         }
 
+        //private bool TryFind121Pattern()
+        //{
+        //    bool isGridChanged = false;
+
+        //    bool Check1Condition(Vector2Int targetCell, Vector2Int lookDirection)
+        //    {
+        //        Vector2Int cell1 = targetCell + lookDirection;
+        //        bool condition1 = IsWithinRange(cell1)
+        //            && cells[cell1.x, cell1.y].isRevealed
+        //            && trackedNumbers[cell1.x, cell1.y] == 1;
+        //        if (!condition1) return false;
+
+        //        Vector2Int cell2 = targetCell - lookDirection;
+        //        bool condition2 = IsWithinRange(cell2)
+        //            && cells[cell2.x, cell2.y].isRevealed
+        //            && trackedNumbers[cell2.x, cell2.y] == 1;
+        //        if (!condition2) return false;
+
+        //        return true;
+        //    }
+
+        //    List<Vector2Int> GetSurroundingUnRevealedCells(Vector2Int targetCell)
+        //    {
+        //        List<Vector2Int> unRevealedCells = new List<Vector2Int>();
+        //        foreach (var direction in DirectionsList)
+        //        {
+        //            Vector2Int targetCoordinates = targetCell + direction;
+        //            if (IsWithinRange(targetCoordinates)
+        //            && !cells[targetCoordinates.x, targetCoordinates.y].isRevealed)
+        //                unRevealedCells.Add(targetCoordinates);
+        //        }
+        //        return unRevealedCells;
+        //    }
+
+        //    bool CheckFor3UnRevealedCells(Vector2Int targetCell, Vector2Int lookDirection)
+        //    {
+        //        List<Vector2Int> unRevealedCells = GetSurroundingUnRevealedCells(targetCell);
+        //        if (unRevealedCells.Count != 3) return false;
+
+        //        // same x
+        //        int targetX = unRevealedCells[0].x;
+        //        if (unRevealedCells.All(c=> c.x == targetX))
+        //        {
+        //            // the cell in the middle is safe and the rest are mines
+        //            int ySum = unRevealedCells.Sum(c => c.y);
+        //            int middleY = ySum / 3;
+        //            Vector2Int safeCell = unRevealedCells.First(c => c.y == middleY);
+        //        }
+        //        // same y
+        //        int targetY = unRevealedCells[0].y;
+        //        if (unRevealedCells.All(c => c.y == targetY))
+        //        {
+        //            int xSum = unRevealedCells.Sum(c => c.x);
+        //            int middleX = xSum / 3;
+        //            Vector2Int safeCell = unRevealedCells.First(c => c.x == middleX);
+        //        }
+        //    }
+
+        //    // Loop through unprocessed number cells
+        //    for (int i = targetCells.Count - 1; i >= 0; i--)
+        //    {
+        //        Vector2Int targetCell = targetCells.ElementAt(i);
+        //        if (trackedNumbers[targetCell.x, targetCell.y] == 2)
+        //        {
+        //            // Check top and bottom cells for 1
+        //            bool topBottomCondition = Check1Condition(targetCell, Vector2Int.up);
+
+        //            // Check Right and left cells
+        //            if (topBottomCondition)
+        //            {
+        //                List<Vector2Int> monitoredCells = new List<Vector2Int>() {
+        //                    new Vector2Int(targetCell.x + 1, targetCell.y + 1),
+        //                    new Vector2Int(targetCell.x + 1, targetCell.y),
+        //                    new Vector2Int(targetCell.x + 1, targetCell.y - 1)
+        //                };
+        //                bool passedEmptyCellsCondition = true;
+        //                foreach (var monitoredCell in monitoredCells)
+        //                {
+        //                    bool condition = IsWithinRange(monitoredCell)
+        //                    && !cells[monitoredCell.x, monitoredCell.y].isRevealed;
+        //                    if (!condition)
+        //                    {
+        //                        passedEmptyCellsCondition = false;
+        //                        break;
+        //                    }
+        //                }
+        //                if (passedEmptyCellsCondition)
+        //                {
+        //                    // Top and Bottom are mines
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
         public async void TrySolve()
         {
             Vector2Int emptyCell = GetRandomEmptyCell();
