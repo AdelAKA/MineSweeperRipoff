@@ -24,7 +24,7 @@ namespace MineSweeperRipeoff
                 OnGridStateChanged?.Invoke(_currentState);
             }
         }
-        public int RemainingMines { get; private set; }
+        public int RemainingMines { get; protected set; }
 
         protected bool isFirstMove;
         protected Cell[,] cells;
@@ -76,7 +76,7 @@ namespace MineSweeperRipeoff
             cells = copy.GetCopyOfCells();
         }
 
-        public void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
+        public virtual void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
         {
             if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
             if (numberOfMinesTraget.HasValue) this.numberOfMines = numberOfMinesTraget.Value;
@@ -128,7 +128,7 @@ namespace MineSweeperRipeoff
                     && coordinates.y < gridSize.y;
         }
 
-        private void SetMineAndAddCountToSurroundingCells(Vector2Int coordinates)
+        protected void SetMineAndAddCountToSurroundingCells(Vector2Int coordinates)
         {
             cells[coordinates.x, coordinates.y].SetAsMine();
 
