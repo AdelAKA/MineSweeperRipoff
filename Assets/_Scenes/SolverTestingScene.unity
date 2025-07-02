@@ -3387,6 +3387,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldGrid: {fileID: 953374898}
+  gridSize: {x: 10, y: 8}
+  minesCount: 12
   usePredefinedGrid: 1
   delayBetweenMoves: 1
   gridSolver:

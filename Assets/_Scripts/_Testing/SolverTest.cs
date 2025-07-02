@@ -7,6 +7,8 @@ namespace MineSweeperRipeoff
     public class SolverTest : MonoBehaviour
     {
         [SerializeField] FieldGrid fieldGrid;
+        [SerializeField] Vector2Int gridSize;
+        [SerializeField] int minesCount;
         [SerializeField] bool usePredefinedGrid;
         [SerializeField] float delayBetweenMoves;
 
@@ -22,8 +24,9 @@ namespace MineSweeperRipeoff
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                CurrentGrid.Initialize(null, null);
+                CurrentGrid.Initialize(gridSize, minesCount);
                 gridSolver = new GridSolver(CurrentGrid, delayBetweenMoves);
+
                 fieldGrid.Initialize(gridSolver);
             }
 

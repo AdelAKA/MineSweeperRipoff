@@ -72,6 +72,7 @@ namespace MineSweeperRipeoff
             numberOfRevealedCells = 0;
             OnGridStateChanged.RemoveAllListeners();
             RemainingMines = numberOfMines;
+            Debug.Log(RemainingMines);
 
             cells = copy.GetCopyOfCells();
         }
