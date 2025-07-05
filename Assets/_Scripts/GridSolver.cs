@@ -9,6 +9,7 @@ namespace MineSweeperRipeoff
     [Serializable]
     public class GridSolver : Grid
     {
+        private bool _isRecursiveDebug;
         private bool _usePredefinedGrid;
         private float _delay;
 
@@ -18,9 +19,10 @@ namespace MineSweeperRipeoff
             this._delay = delay;
         }
 
-        public GridSolver(Grid copy, float delay = 1, bool isDebug = false) : base(copy)
+        public GridSolver(Grid copy, float delay = 1, bool isDebug = false, bool isRecursiveDebug = false) : base(copy)
         {
             this.isDebug = isDebug;
+            this._isRecursiveDebug = isRecursiveDebug;
             this._delay = delay;
             trackedNumbers = new int[gridSize.x, gridSize.y];
             predictedMines = new bool[gridSize.x, gridSize.y];
@@ -199,6 +201,8 @@ namespace MineSweeperRipeoff
                 // => confirm mines and lower count for surrounding cells
                 if (possibleMineCells.Count == trackedNumbers[monitoredCell.x, monitoredCell.y])
                 {
+                    Debug.Log($"Matched Corresponding Unpredicted cells at {monitoredCell}");
+
                     isGridChanged = true;
                     foreach (var possibleMineCell in possibleMineCells)
                     {
@@ -256,6 +260,7 @@ namespace MineSweeperRipeoff
             foreach (var cell in cellsToUntarget)
             {
                 monitoredCells.Remove(cell);
+                Debug.Log($"Matched Corresponding Number of mines at {cell}");
                 if (isDebug) Debug.Log($"untargeting {cell}");
             }
             return isGridChanged;
@@ -534,7 +539,7 @@ namespace MineSweeperRipeoff
                         && cells[lookDirection.x, lookDirection.y].isRevealed
                         && trackedNumbers[lookDirection.x, lookDirection.y] - 1 < 0)
                     {
-                        Debug.Log($"Not Safe at {targetCell} cuz {lookDirection} is {trackedNumbers[lookDirection.x, lookDirection.y]}");
+                        if (_isRecursiveDebug) Debug.Log($"Not Safe at {targetCell} cuz {lookDirection} is {trackedNumbers[lookDirection.x, lookDirection.y]}");
                         return false;
                     }
                 }
@@ -563,13 +568,13 @@ namespace MineSweeperRipeoff
                         possibleSolutions.Add(new List<Vector2Int>(predictedMines));
                         string s = "";
                         predictedMines.ForEach(p => s += p);
-                        Debug.Log("Found Solution\n" + s);
+                        if(_isRecursiveDebug) Debug.Log("Found Solution\n" + s);
                     }
                     return;
                 }
 
                 Vector2Int currentCell = edgeCells[index];
-                Debug.Log($"try mine at {currentCell}");
+                if (_isRecursiveDebug) Debug.Log($"try mine at {currentCell}");
                 if (IsSafeToPlaceMine(trackedNumbers, currentCell, predictedMines.Count))
                 {
                     // Mark current cell as a mine
@@ -587,7 +592,7 @@ namespace MineSweeperRipeoff
                             trackedNumbers[lookDirection.x, lookDirection.y]++;
                     }
                 }
-                Debug.Log($"try with no mine at {currentCell}");
+                if (_isRecursiveDebug) Debug.Log($"try with no mine at {currentCell}");
                 // Recursive call with current cell having a mine
                 TestAllPossibleCases(edgeCells, possibleSolutions, predictedMines, index);
             }
@@ -607,13 +612,14 @@ namespace MineSweeperRipeoff
 
             List<Vector2Int> edgeCells = FindEdgeUnpredictedCells();
 
-            Debug.Log("Unpredicted cells");
-            edgeCells.ForEach(e => Debug.Log(e));
+            string unpredictedCellsString = "";
+            edgeCells.ForEach(e => unpredictedCellsString += e);
+            Debug.Log("Unpredicted cells: " + unpredictedCellsString);
 
             edgeCells.Sort((x, y) => Compare(x, y));
-            Debug.Log("Unpredicted cells after sort");
-            edgeCells.ForEach(e => Debug.Log(e));
-
+            string unpredictedSortedCellsString = "";
+            edgeCells.ForEach(e => unpredictedSortedCellsString += e);
+            Debug.Log("Unpredicted cells after sort:" + unpredictedSortedCellsString);
 
             List<List<Vector2Int>> possibleSolutions = new List<List<Vector2Int>>();
             TestAllPossibleCases(edgeCells, possibleSolutions, new List<Vector2Int>(), -1);
@@ -628,14 +634,37 @@ namespace MineSweeperRipeoff
             {
                 // only one correct possible solution
                 // Apply solution
-                foreach (var possibleMineCell in possibleSolutions[0])
+
+                List<Vector2Int> certainMineCells = possibleSolutions[0];
+                List<Vector2Int> certainSafeCells = edgeCells.Where(e => !certainMineCells.Contains(e)).ToList();
+                List<Vector2Int> cellsToUntarget = new List<Vector2Int>(monitoredCells);
+
+                bool isChanging = false;
+                foreach (var certainMineCell in certainMineCells)
                 {
                     await Task.Delay((int)(_delay * 1000f));
-                    predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
-                    UpdateCellFlagState(possibleMineCell);
-                    SubtractCountFromSurroundingCells(possibleMineCell);
+                    predictedMines[certainMineCell.x, certainMineCell.y] = true;
+                    UpdateCellFlagState(certainMineCell);
+                    SubtractCountFromSurroundingCells(certainMineCell);
+                    isChanging = true;
                 }
-                return true;
+
+                foreach (var certainSafeCell in certainSafeCells)
+                {
+                    if (cells[certainSafeCell.x, certainSafeCell.y].isRevealed) continue;
+                    await Task.Delay((int)(_delay * 1000f));
+                    TryRevealCell(certainSafeCell);
+                    isChanging = true;
+                }
+
+                foreach (var cell in cellsToUntarget)
+                {
+                    monitoredCells.Remove(cell);
+                    if (isDebug) Debug.Log($"untargeting {cell}");
+                    isChanging = true;
+                }
+
+                return isChanging;
             }
             else // multiple possible solutions
             {
@@ -674,6 +703,10 @@ namespace MineSweeperRipeoff
                     isChanging = true;
                 }
 
+                string s = "";
+                monitoredCells.ToList().ForEach(m => s += m);
+                Debug.Log("monitored cells " + s);
+
                 return isChanging;
             }
         }
@@ -684,27 +717,27 @@ namespace MineSweeperRipeoff
             TryRevealCell(emptyCell);
             bool isChanging = true;
 
-            isChanging = await TryTestAllPossibleCases();
-            await Awaitable.WaitForSecondsAsync(2);
-            isChanging = await TryTestAllPossibleCases();
-            await Awaitable.WaitForSecondsAsync(2);
-            isChanging = await TryTestAllPossibleCases();
-            await Awaitable.WaitForSecondsAsync(2);
+            //isChanging = await TryTestAllPossibleCases();
+            //await Task.Delay((int)(2000f));
+            //isChanging = await TryTestAllPossibleCases();
+            //await Task.Delay((int)(2000f));
+            //isChanging = await TryTestAllPossibleCases();
+            //await Task.Delay((int)(2000f));
 
             while (isChanging)
             {
-                //bool isMinesPredicted = await TrySolveForCorrespondingNumberOfSurroundingMines();
-                //bool isCellsRevealed = await TrySolveForCorrespondingNumberOfUnrevealedCells();
-                //bool is121PatternFound = await TryFind121Pattern();
-                //bool is1221PatternFound = await TryFind1221Pattern();
-                //isChanging = isMinesPredicted || isCellsRevealed || is121PatternFound || is1221PatternFound;
-                //if (isChanging) continue;
-                //else
-                //{
-                //    isChanging = await TryTestAllPossibleCases();
-                //}
+                bool isMinesPredicted = await TrySolveForCorrespondingNumberOfSurroundingMines();
+                bool isCellsRevealed = await TrySolveForCorrespondingNumberOfUnrevealedCells();
+                bool is121PatternFound = await TryFind121Pattern();
+                bool is1221PatternFound = await TryFind1221Pattern();
+                isChanging = isMinesPredicted || isCellsRevealed || is121PatternFound || is1221PatternFound;
+                if (isChanging) continue;
+                else
+                {
+                    isChanging = await TryTestAllPossibleCases();
+                }
 
-                isChanging = await TryTestAllPossibleCases();
+                //isChanging = await TryTestAllPossibleCases();
             }
             Debug.Log("Finish");
         }
