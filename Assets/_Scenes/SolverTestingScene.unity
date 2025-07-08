@@ -3390,12 +3390,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldGrid: {fileID: 953374898}
-  gridSize: {x: 0, y: 0}
-  minesCount: 0
+  gridSize: {x: 16, y: 8}
+  minesCount: 20
   usePredefinedGrid: 1
-  delayBetweenMoves: 0.5
+  delayBetweenMoves: 0.2
   gridSolver:
-    isDebug: 0
+    isDebug: 1
     gridSize: {x: 0, y: 0}
     numberOfMines: 0
     OnGridStateChanged:

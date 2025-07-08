@@ -299,7 +299,7 @@ namespace MineSweeperRipeoff
             if (cells[coordinates.x, coordinates.y].cellType == CellType.Empty)
             {
                 RevealCellsRecursivley(coordinates, 1);
-                Debug.Log("Finish Recursion");
+                if (isDebug) Debug.Log("Finish Recursion");
             }
 
             if (cells[coordinates.x, coordinates.y].cellType == CellType.Mine)
