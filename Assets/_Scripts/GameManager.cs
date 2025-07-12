@@ -25,15 +25,16 @@ namespace MineSweeperRipeoff
         private int hardMines = 24;
 
         private DifficultyLevel currentDifficulty;
+        private GameMode currentGameMode;
         private float timer;
 
         public UnityAction<GridState, bool> OnGridStateChanged;
 
         public MoveType CurrentMoveType { get; set; }
 
-
         public GridState CurrentGridState => CurrentGrid.CurrentState;
         public DifficultyLevel CurrentDifficulty => currentDifficulty;
+        public GameMode CurrentGameMode => currentGameMode;
 
         public int RemainingMines => CurrentGrid.RemainingMines;
         public float CurrentTime => timer;

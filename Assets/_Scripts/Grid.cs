@@ -26,6 +26,7 @@ namespace MineSweeperRipeoff
         }
         public int RemainingMines { get; protected set; }
 
+        protected GridGenerator gridGenerator = new GridGenerator();
         protected bool isFirstMove;
         protected Cell[,] cells;
         protected int numberOfRevealedCells;
@@ -60,64 +61,96 @@ namespace MineSweeperRipeoff
             return cellsCopy;
         }
 
-        public Grid() { }
+        public Grid()
+        {
+        }
 
         public Grid(Grid copy)
         {
             this.gridSize = copy.gridSize;
             this.numberOfMines = copy.numberOfMines;
 
+            ResetGrid();
+
+            cells = copy.GetCopyOfCells();
+        }
+
+        public Grid(Cell[,] cellsCopy, int numberOfMines)
+        {
+            this.gridSize = new Vector2Int(cellsCopy.GetLength(0), cellsCopy.GetLength(1));
+            this.numberOfMines = numberOfMines;
+
+            ResetGrid();
+
+            cells = new Cell[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    cells[i, j] = new Cell(cellsCopy[i, j]);
+                }
+            }
+        }
+
+        private void ResetGrid()
+        {
             isFirstMove = true;
             CurrentState = GridState.NotStarted;
             numberOfRevealedCells = 0;
             OnGridStateChanged.RemoveAllListeners();
             RemainingMines = numberOfMines;
             Debug.Log(RemainingMines);
-
-            cells = copy.GetCopyOfCells();
         }
 
-        public virtual void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
+        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
         {
             if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
             if (numberOfMinesTraget.HasValue) this.numberOfMines = numberOfMinesTraget.Value;
 
-            isFirstMove = true;
-            CurrentState = GridState.NotStarted;
-            numberOfRevealedCells = 0;
-            OnGridStateChanged.RemoveAllListeners();
-            RemainingMines = numberOfMines;
+            //isFirstMove = true;
+            //CurrentState = GridState.NotStarted;
+            //numberOfRevealedCells = 0;
+            //OnGridStateChanged.RemoveAllListeners();
+            //RemainingMines = numberOfMines;
 
-            cells = new Cell[gridSize.x, gridSize.y];
+            ResetGrid();
 
-            if (isDebug) Debug.Log($"{cells.Length}");
+            Vector2Int startCell;
+            (cells, startCell) = await gridGenerator.GenerateNoChanceGrid(gridSize, numberOfMines);
 
-            for (int i = 0; i < gridSize.x; i++)
             {
-                for (int j = 0; j < gridSize.y; j++)
-                {
-                    if (isDebug) Debug.Log($"{i}, {j}, {gridSize}");
-                    //Debug.Log($"{i < gridSize.x}");
-                    cells[i, j] = new Cell(new Vector2Int(i, j));
-                }
-            }
+                //cells = new Cell[gridSize.x, gridSize.y];
 
-            availableCellsForMines = new List<Vector2Int>();
-            for (int i = 0; i < gridSize.x; i++)
-            {
-                for (int j = 0; j < gridSize.y; j++)
-                {
-                    availableCellsForMines.Add(new Vector2Int(i, j));
-                }
-            }
+                //if (isDebug) Debug.Log($"{cells.Length}");
 
-            for (int i = 0; i < numberOfMines; i++)
-            {
-                int randomIndex = UnityEngine.Random.Range(0, availableCellsForMines.Count);
+                //for (int i = 0; i < gridSize.x; i++)
+                //{
+                //    for (int j = 0; j < gridSize.y; j++)
+                //    {
+                //        if (isDebug) Debug.Log($"{i}, {j}, {gridSize}");
+                //        //Debug.Log($"{i < gridSize.x}");
+                //        cells[i, j] = new Cell(new Vector2Int(i, j));
+                //    }
+                //}
 
-                SetMineAndAddCountToSurroundingCells(availableCellsForMines[randomIndex]);
+                //availableCellsForMines = new List<Vector2Int>();
+                //for (int i = 0; i < gridSize.x; i++)
+                //{
+                //    for (int j = 0; j < gridSize.y; j++)
+                //    {
+                //        availableCellsForMines.Add(new Vector2Int(i, j));
+                //    }
+                //}
 
-                availableCellsForMines.RemoveAt(randomIndex);
+                //for (int i = 0; i < numberOfMines; i++)
+                //{
+                //    int randomIndex = UnityEngine.Random.Range(0, availableCellsForMines.Count);
+
+                //    SetMineAndAddCountToSurroundingCells(availableCellsForMines[randomIndex]);
+
+                //    availableCellsForMines.RemoveAt(randomIndex);
+                //}
             }
         }
 
@@ -173,6 +206,15 @@ namespace MineSweeperRipeoff
 
         public void SwitchMinesAroundFirstMove(Vector2Int coordinates)
         {
+            availableCellsForMines = new List<Vector2Int>();
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    if (cells[i, j].cellType != CellType.Mine)
+                        availableCellsForMines.Add(new Vector2Int(i, j));
+                }
+            }
             if (availableCellsForMines.Contains(coordinates))
             {
                 availableCellsForMines.Remove(coordinates);
@@ -341,7 +383,7 @@ namespace MineSweeperRipeoff
             RevealCell(coordinates, sequenceCount);
 
             //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(0.05f);
-            if(ShouldDelay) await Task.Delay(50);
+            if (ShouldDelay) await Task.Delay(50);
 
             foreach (var direction in DirectionsList)
             {

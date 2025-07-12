@@ -3393,7 +3393,7 @@ MonoBehaviour:
   gridSize: {x: 16, y: 8}
   minesCount: 20
   usePredefinedGrid: 1
-  delayBetweenMoves: 0.2
+  delayBetweenMoves: 0
   gridSolver:
     isDebug: 1
     gridSize: {x: 0, y: 0}

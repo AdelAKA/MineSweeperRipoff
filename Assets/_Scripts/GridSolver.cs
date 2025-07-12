@@ -19,7 +19,25 @@ namespace MineSweeperRipeoff
             this._delay = delay;
         }
 
-        public GridSolver(Grid copy, float delay = 1, bool isDebug = false, bool isRecursiveDebug = false) : base(copy)
+        public GridSolver(Grid copy, float delay = 0, bool isDebug = false, bool isRecursiveDebug = false) : base(copy)
+        {
+            this.isDebug = isDebug;
+            this._isRecursiveDebug = isRecursiveDebug;
+            this._delay = delay;
+            trackedNumbers = new int[gridSize.x, gridSize.y];
+            predictedMines = new bool[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    trackedNumbers[i, j] = cells[i, j].number;
+                    if (isDebug) Debug.Log($"{i} {j} {trackedNumbers[i, j]}");
+                }
+            }
+        }
+
+        public GridSolver(Cell[,] cellsCopy, int numberOfMines, float delay = 0, bool isDebug = false, bool isRecursiveDebug = false) : base(cellsCopy, numberOfMines)
         {
             this.isDebug = isDebug;
             this._isRecursiveDebug = isRecursiveDebug;
@@ -655,7 +673,7 @@ namespace MineSweeperRipeoff
                 bool isChanging = false;
                 foreach (var certainMineCell in certainMineCells)
                 {
-                    if(_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
                     predictedMines[certainMineCell.x, certainMineCell.y] = true;
                     UpdateCellFlagState(certainMineCell);
                     SubtractCountFromSurroundingCells(certainMineCell);
@@ -724,10 +742,10 @@ namespace MineSweeperRipeoff
             }
         }
 
-        public async void TrySolve()
+        public async Task<Vector2Int> TrySolve()
         {
-            Vector2Int emptyCell = GetRandomEmptyCell();
-            TryRevealCell(emptyCell);
+            Vector2Int startCell = GetRandomEmptyCell();
+            TryRevealCell(startCell);
             bool isChanging = true;
 
             //isChanging = await TryTestAllPossibleCases();
@@ -759,18 +777,20 @@ namespace MineSweeperRipeoff
             // Get the elapsed time as a TimeSpan value.
             TimeSpan ts = stopWatch.Elapsed;
             UnityEngine.Debug.Log(ts);
+            return startCell;
         }
 
         private Vector2Int GetRandomEmptyCell()
         {
+            List<Vector2Int> emptyCells = new List<Vector2Int>();
             for (int i = 0; i < gridSize.x; i++)
             {
                 for (int j = 0; j < gridSize.y; j++)
                 {
-                    if (cells[i, j].number == 0) return new Vector2Int(i, j);
+                    if (cells[i, j].number == 0) emptyCells.Add(new Vector2Int(i, j));
                 }
             }
-            return Vector2Int.zero;
+            return emptyCells[UnityEngine.Random.Range(0, emptyCells.Count)];
         }
     }
 }

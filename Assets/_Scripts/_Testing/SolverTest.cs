@@ -20,10 +20,11 @@ namespace MineSweeperRipeoff
 
         private void Start()
         {
-            CurrentGrid = new GridSolver(delayBetweenMoves, usePredefinedGrid);
+            //CurrentGrid = new GridSolver(delayBetweenMoves, usePredefinedGrid);
+            CurrentGrid = new Grid();
         }
 
-        private void Update()
+        private async void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -35,7 +36,10 @@ namespace MineSweeperRipeoff
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                gridSolver.TrySolve();
+                UnityEngine.Debug.Log("started");
+                await gridSolver.TrySolve();
+                UnityEngine.Debug.Log(gridSolver.CurrentState);
+                UnityEngine.Debug.Log("ended");
             }
         }
     }
