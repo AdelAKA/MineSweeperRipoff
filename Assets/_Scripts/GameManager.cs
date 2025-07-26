@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace MineSweeperRipeoff
 {
@@ -27,6 +26,8 @@ namespace MineSweeperRipeoff
         private DifficultyLevel currentDifficulty;
         private float timer;
 
+        private string SavePath => $"{CurrentGameMode}_{CurrentDifficulty}";
+
         public UnityAction<GridState, bool> OnGridStateChanged;
         public UnityAction OnGameModeChanged;
 
@@ -48,6 +49,8 @@ namespace MineSweeperRipeoff
                 Destroy(gameObject);
                 return;
             }
+
+            Debug.Log(Application.persistentDataPath);
         }
 
         private void Update()
@@ -55,16 +58,31 @@ namespace MineSweeperRipeoff
 #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                StartNewGame(currentDifficulty);
+                StartNewGame();
             }
 #endif
             if (CurrentGrid.CurrentState == GridState.Playing)
                 timer += Time.deltaTime;
         }
 
-        public void StartNewGame(DifficultyLevel level)
+        public void RequestGame(DifficultyLevel level)
         {
-            switch (level)
+            currentDifficulty = level;
+            if (DataSaver.SavedGridExists(SavePath))
+            {
+                Debug.Log("Loading Grid");
+                LoadExistingGrid();
+            }
+            else
+            {
+                Debug.Log("No Saved Grid");
+                StartNewGame();
+            }
+        }
+
+        public void StartNewGame()
+        {
+            switch (CurrentDifficulty)
             {
                 case DifficultyLevel.Easy:
                     CurrentGrid.Initialize(easySize, easymines, CurrentGameMode);
@@ -79,8 +97,24 @@ namespace MineSweeperRipeoff
                     CurrentGrid.Initialize(mediumSize, mediumMines, CurrentGameMode);
                     break;
             }
+            UpdateParameters();
+
+            DataSaver.DeleteSave(SavePath);
+        }
+
+        private void LoadExistingGrid()
+        {
+            GridSaveData gridSaveData = DataSaver.TryLoadGrid(SavePath);
+            CurrentGrid = new Grid(gridSaveData);
+            UpdateParameters();
+            timer = gridSaveData.timer;
+
+            DataSaver.DeleteSave(SavePath);
+        }
+
+        private void UpdateParameters()
+        {
             timer = 0;
-            currentDifficulty = level;
             CurrentGrid.OnGridStateChanged.AddListener(Event_OnGridStateChanged);
             fieldGrid.Initialize(CurrentGrid);
             //inGameUi.OnNewGame();
@@ -91,7 +125,20 @@ namespace MineSweeperRipeoff
 
         public void RequestRestart()
         {
-            StartNewGame(currentDifficulty);
+            StartNewGame();
+        }
+
+        public void RequestFinish()
+        {
+            if (!CurrentGrid.IsFirstMove)
+            {
+                Debug.Log("Saving Grid");
+                GridSaveData gridSaveData = CurrentGrid.GetSaveData();
+                gridSaveData.timer = timer;
+                DataSaver.SaveGrid(SavePath, gridSaveData);
+            }
+
+            TabsManager.Instance.ShowStartScreen();
         }
 
         public void UpdateCellFlagState(Vector2Int targetCoordinates)

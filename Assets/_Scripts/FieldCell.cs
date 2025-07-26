@@ -43,6 +43,23 @@ namespace MineSweeperRipeoff
         {
             this.referencedCell = referencedCell;
             ResetCell();
+            if (referencedCell.isRevealed)
+            {
+                ClosedCellImage.enabled = false;
+                OpenedCellImage.enabled = true;
+
+                contentImage.enabled = false;
+                if (referencedCell.cellType == CellType.Number)
+                {
+                    contentImage.enabled = true;
+                    contentImage.sprite = numbersCollection.GetSpriteOfNumber(referencedCell.number);
+                }
+            }
+            else if (referencedCell.isFlagged)
+            {
+                contentImage.sprite = flagSprite;
+                contentImage.enabled = true;
+            }
         }
 
         private void ResetCell()

@@ -5,11 +5,11 @@ namespace MineSweeperRipeoff
     public static class PlayerData
     {
         public static int GetCurrentWinStreak(DifficultyLevel difficultyLevel, GameMode gameMode)
-            => PlayerPrefs.HasKey("CurrentStreak" + difficultyLevel.ToString()) ?
+            => PlayerPrefs.HasKey("CurrentStreak" + difficultyLevel.ToString() + gameMode.ToString()) ?
             PlayerPrefs.GetInt("CurrentStreak" + difficultyLevel.ToString() + gameMode.ToString()) : 0;
 
         public static float GetBestScore(DifficultyLevel difficultyLevel, GameMode gameMode)
-            => PlayerPrefs.HasKey("BestScore" + difficultyLevel.ToString()) ?
+            => PlayerPrefs.HasKey("BestScore" + difficultyLevel.ToString() + gameMode.ToString()) ?
             PlayerPrefs.GetFloat("BestScore" + difficultyLevel.ToString() + gameMode.ToString()) : 0;
 
         public static void SetCurrentWinStreak(DifficultyLevel difficultyLevel, GameMode gameMode, int newStreak)

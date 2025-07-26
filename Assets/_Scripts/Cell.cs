@@ -23,10 +23,10 @@ namespace MineSweeperRipeoff
         {
             this.coordinates = copy.coordinates;
             this.cellType = copy.cellType;
-            isRevealed = false;
-            isFlagged = false;
+            this.isRevealed = copy.isRevealed;
+            this.isFlagged = copy.isFlagged;
             this.number = copy.number;
-            isLosingCell = false;
+            this.isLosingCell = copy.isLosingCell;
         }
 
         public Cell(Vector2Int coordinates)

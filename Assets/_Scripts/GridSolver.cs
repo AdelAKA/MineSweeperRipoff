@@ -139,7 +139,7 @@ namespace MineSweeperRipeoff
                 };
                 numberOfMines = minesList.Count;
 
-                isFirstMove = true;
+                IsFirstMove = true;
                 CurrentState = GridState.NotStarted;
                 numberOfRevealedCells = 0;
                 OnGridStateChanged.RemoveAllListeners();

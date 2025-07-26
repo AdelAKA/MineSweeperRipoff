@@ -19,7 +19,7 @@ namespace MineSweeperRipeoff
 
         public void Action_StartGame(int difficulty)
         {
-            GameManager.Instance.StartNewGame((DifficultyLevel)difficulty);
+            GameManager.Instance.RequestGame((DifficultyLevel)difficulty);
             Prepare();
         }
 

@@ -33,7 +33,7 @@ namespace MineSweeperRipeoff
             sfxMuteButton.onClick.AddListener(SwitchSfxMuteOption);
 
             UpdateGameSpeedModeButton();
-            UpdateGameSpeedModeButton();
+            UpdateGameModeButton();
             UpdateMusicMuteButton();
             UpdateSfxMuteButton();
 

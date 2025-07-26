@@ -25,9 +25,9 @@ namespace MineSweeperRipeoff
             }
         }
         public int RemainingMines { get; protected set; }
+        public bool IsFirstMove { get; protected set; }
 
         protected GridGenerator gridGenerator = new GridGenerator();
-        protected bool isFirstMove;
         protected Cell[,] cells;
         protected int numberOfRevealedCells;
         private List<Vector2Int> availableCellsForMines;
@@ -47,6 +47,28 @@ namespace MineSweeperRipeoff
 
         public virtual bool ShouldDelay => !PlayerData.IsSpeedRunMode;
         public Cell GetCell(Vector2Int targetCoordinates) => cells[targetCoordinates.x, targetCoordinates.y];
+
+        public GridSaveData GetSaveData()
+        {
+            List<Cell> cellsToSave = new List<Cell>(gridSize.x * gridSize.y);
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    cellsToSave.Add(cells[i, j]);
+                }
+            }
+            GridSaveData dataToSave = new GridSaveData()
+            {
+                gridSize = this.gridSize,
+                numberOfMines = this.numberOfMines,
+                remainingMines = this.RemainingMines,
+                numberOfRevealedCells = this.numberOfRevealedCells,
+                cells = cellsToSave
+            };
+            return dataToSave;
+        }
+
         public Cell[,] GetCopyOfCells()
         {
             Cell[,] cellsCopy = new Cell[gridSize.x, gridSize.y];
@@ -65,12 +87,40 @@ namespace MineSweeperRipeoff
         {
         }
 
+        public Grid(GridSaveData loadedGridData)
+        {
+            this.gridSize = loadedGridData.gridSize;
+            this.numberOfMines = loadedGridData.numberOfMines;
+            this.RemainingMines = loadedGridData.remainingMines;
+            this.IsFirstMove = false;
+            this.CurrentState = GridState.Playing;
+            this.numberOfRevealedCells = loadedGridData.numberOfRevealedCells;
+            OnGridStateChanged.RemoveAllListeners();
+
+            //ResetGrid();
+
+            cells = new Cell[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    cells[i, j] = new Cell(loadedGridData.cells[i * gridSize.y + j]);
+                }
+            }
+        }
+
         public Grid(Grid copy)
         {
             this.gridSize = copy.gridSize;
             this.numberOfMines = copy.numberOfMines;
+            this.RemainingMines = copy.RemainingMines;
+            this.IsFirstMove = copy.IsFirstMove;
+            this.CurrentState = copy.CurrentState;
+            this.numberOfRevealedCells = copy.numberOfRevealedCells;
+            OnGridStateChanged.RemoveAllListeners();
 
-            ResetGrid();
+            //ResetGrid();
 
             cells = copy.GetCopyOfCells();
         }
@@ -95,7 +145,7 @@ namespace MineSweeperRipeoff
 
         private void ResetGrid()
         {
-            isFirstMove = true;
+            IsFirstMove = true;
             CurrentState = GridState.NotStarted;
             numberOfRevealedCells = 0;
             OnGridStateChanged.RemoveAllListeners();
@@ -274,7 +324,7 @@ namespace MineSweeperRipeoff
                 TryRevealCell(coordinates);
                 CheckGameState();
                 CurrentState = GridState.Playing;
-                isFirstMove = false;
+                IsFirstMove = false;
             }
             else // No Chance Grid
             {
@@ -283,7 +333,7 @@ namespace MineSweeperRipeoff
                     TryRevealCell(coordinates);
                     CheckGameState();
                     CurrentState = GridState.Playing;
-                    isFirstMove = false;
+                    IsFirstMove = false;
                 }
             }
         }
@@ -291,7 +341,7 @@ namespace MineSweeperRipeoff
         public void MakeMove(Vector2Int coordinates)
         {
             if (cells[coordinates.x, coordinates.y].isFlagged) return;
-            if (isFirstMove)
+            if (IsFirstMove)
             {
                 TryMakeFirstMove(coordinates);
                 return;

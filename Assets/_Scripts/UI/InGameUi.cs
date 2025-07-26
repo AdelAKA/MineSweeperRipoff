@@ -50,7 +50,7 @@ namespace MineSweeperRipeoff
             backButton.onClick.AddListener(() =>
             {
                 if (GameManager.Instance.CurrentGridState > GridState.Playing) return;
-                TabsManager.Instance.ShowStartScreen();
+                GameManager.Instance.RequestFinish();
             });
 
             clearButton.Initialize(() =>
