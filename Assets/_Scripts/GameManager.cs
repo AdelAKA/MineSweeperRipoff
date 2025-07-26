@@ -25,16 +25,16 @@ namespace MineSweeperRipeoff
         private int hardMines = 24;
 
         private DifficultyLevel currentDifficulty;
-        private GameMode currentGameMode;
         private float timer;
 
         public UnityAction<GridState, bool> OnGridStateChanged;
+        public UnityAction OnGameModeChanged;
 
         public MoveType CurrentMoveType { get; set; }
 
         public GridState CurrentGridState => CurrentGrid.CurrentState;
         public DifficultyLevel CurrentDifficulty => currentDifficulty;
-        public GameMode CurrentGameMode => currentGameMode;
+        public GameMode CurrentGameMode => PlayerData.CurrentGameMode;
 
         public int RemainingMines => CurrentGrid.RemainingMines;
         public float CurrentTime => timer;
@@ -67,16 +67,16 @@ namespace MineSweeperRipeoff
             switch (level)
             {
                 case DifficultyLevel.Easy:
-                    CurrentGrid.Initialize(easySize, easymines);
+                    CurrentGrid.Initialize(easySize, easymines, CurrentGameMode);
                     break;
                 case DifficultyLevel.Medium:
-                    CurrentGrid.Initialize(mediumSize, mediumMines);
+                    CurrentGrid.Initialize(mediumSize, mediumMines, CurrentGameMode);
                     break;
                 case DifficultyLevel.Hard:
-                    CurrentGrid.Initialize(hardSize, hardMines);
+                    CurrentGrid.Initialize(hardSize, hardMines, CurrentGameMode);
                     break;
                 default:
-                    CurrentGrid.Initialize(mediumSize, mediumMines);
+                    CurrentGrid.Initialize(mediumSize, mediumMines, CurrentGameMode);
                     break;
             }
             timer = 0;
@@ -120,13 +120,27 @@ namespace MineSweeperRipeoff
             particle.transform.position = fieldCell.transform.position;
         }
 
+        public void SwitchGameSpeedMode()
+        {
+            PlayerData.IsSpeedRunMode = !PlayerData.IsSpeedRunMode;
+        }
+
+        public void SwitchGameMode()
+        {
+            if (PlayerData.CurrentGameMode == GameMode.Chance)
+                PlayerData.CurrentGameMode = GameMode.NoChance;
+            else
+                PlayerData.CurrentGameMode = GameMode.Chance;
+            OnGameModeChanged?.Invoke();
+        }
+
         private void UpdateScore()
         {
-            PlayerData.SetCurrentWinStreak(currentDifficulty, PlayerData.GetCurrentWinStreak(currentDifficulty) + 1);
+            PlayerData.SetCurrentWinStreak(currentDifficulty, CurrentGameMode, PlayerData.GetCurrentWinStreak(currentDifficulty, CurrentGameMode) + 1);
 
-            if (timer < PlayerData.GetBestScore(currentDifficulty) || PlayerData.GetBestScore(currentDifficulty) == 0)
+            if (timer < PlayerData.GetBestScore(currentDifficulty, CurrentGameMode) || PlayerData.GetBestScore(currentDifficulty, CurrentGameMode) == 0)
             {
-                PlayerData.SetBestScore(currentDifficulty, timer);
+                PlayerData.SetBestScore(currentDifficulty, CurrentGameMode, timer);
                 Debug.Log($"New Player Score {timer}");
                 OnGridStateChanged?.Invoke(GridState.Cleared, true);
             }
@@ -138,7 +152,7 @@ namespace MineSweeperRipeoff
 
         private void ResetStreak()
         {
-            PlayerData.SetCurrentWinStreak(CurrentDifficulty, 0);
+            PlayerData.SetCurrentWinStreak(CurrentDifficulty, CurrentGameMode, 0);
         }
 
         private void FlagTheMines() => CurrentGrid.FlagTheMines();

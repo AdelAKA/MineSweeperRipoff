@@ -60,9 +60,9 @@ namespace MineSweeperRipeoff
         private bool[,] predictedMines;
         private HashSet<Vector2Int> monitoredCells = new HashSet<Vector2Int>();
 
-        public override void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
+        public override void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget, GameMode gameMode)
         {
-            if (!_usePredefinedGrid) base.Initialize(gridSizeTraget, numberOfMinesTraget);
+            if (!_usePredefinedGrid) base.Initialize(gridSizeTraget, numberOfMinesTraget, gameMode);
             else
             {
                 this.gridSize = new Vector2Int(16, 8);

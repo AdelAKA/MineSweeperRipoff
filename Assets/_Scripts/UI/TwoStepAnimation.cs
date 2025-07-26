@@ -26,11 +26,11 @@ public class TwoStepAnimation : MonoBehaviour
         {
             if (EnablePositionAnimation)
             {
-                transform.position = isStartState ? StartPosition : EndPosition;
+                transform.localPosition = isStartState ? StartPosition : EndPosition;
             }
             if (EnableRotationAnimation)
             {
-                transform.rotation = isStartState ? Quaternion.Euler(StartRotation) : Quaternion.Euler(EndRotation);
+                transform.localRotation = isStartState ? Quaternion.Euler(StartRotation) : Quaternion.Euler(EndRotation);
             }
             if (EnableScaleAnimation)
             {

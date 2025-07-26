@@ -13,6 +13,7 @@ namespace MineSweeperRipeoff
         [SerializeField] protected NumbersCollection numbersCollection;
         [SerializeField] public Sprite flagSprite;
         [SerializeField] public Sprite mineSprite;
+        [SerializeField] public Sprite startMarkSprite;
 
         [Header("Settings")]
         [SerializeField] protected Color clickedMineColor;
@@ -51,6 +52,11 @@ namespace MineSweeperRipeoff
 
             contentImage.sprite = null;
             contentImage.enabled = false;
+            if (referencedCell.isForcePress)
+            {
+                contentImage.enabled = true;
+                contentImage.sprite = startMarkSprite;
+            }
         }
 
         protected virtual void Event_UpdateCellContent(int sequenceCount)

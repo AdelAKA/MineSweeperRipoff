@@ -64,7 +64,7 @@ namespace MineSweeperRipeoff
                 SwitchMoveType(MoveType.Flag);
             });
 
-            currentWinStreakText.text = PlayerData.GetCurrentWinStreak(GameManager.Instance.CurrentDifficulty).ToString();
+            currentWinStreakText.text = PlayerData.GetCurrentWinStreak(GameManager.Instance.CurrentDifficulty, GameManager.Instance.CurrentGameMode).ToString();
             GameManager.Instance.OnGridStateChanged += OnGridStateChanged_Event;
         }
 
@@ -122,7 +122,7 @@ namespace MineSweeperRipeoff
                     break;
             }
 
-            currentWinStreakText.text = PlayerData.GetCurrentWinStreak(GameManager.Instance.CurrentDifficulty).ToString();
+            currentWinStreakText.text = PlayerData.GetCurrentWinStreak(GameManager.Instance.CurrentDifficulty, GameManager.Instance.CurrentGameMode).ToString();
         }
 
         private void OnNewGame()
@@ -150,7 +150,7 @@ namespace MineSweeperRipeoff
             string description = "";
             if (isNewScore)
             {
-                TimeSpan time = TimeSpan.FromSeconds(PlayerData.GetBestScore(GameManager.Instance.CurrentDifficulty));
+                TimeSpan time = TimeSpan.FromSeconds(PlayerData.GetBestScore(GameManager.Instance.CurrentDifficulty, GameManager.Instance.CurrentGameMode));
                 description = "Hmmm?!\n" + string.Format("{0:D2}:{1:D2}", time.Minutes, time.Seconds);
             }
 

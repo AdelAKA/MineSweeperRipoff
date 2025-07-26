@@ -10,7 +10,11 @@ namespace MineSweeperRipeoff
             Application.targetFrameRate = 60;
             TabsManager.Instance.ShowStartScreen();
             //AudioManager.Instance.PlayMusic(ClipName.MainMenu);
+            SoundManager.Instance.ToggleSoundForMusic(PlayerData.MusicMuteOption);
+            SoundManager.Instance.ToggleSoundForSFX(PlayerData.SfxMuteOption);
+
             SoundManager.Instance.PlayMusic(ClipName.MainMenu);
+
         }
 
         public void Action_StartGame(int difficulty)

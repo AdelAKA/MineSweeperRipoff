@@ -10,6 +10,7 @@ namespace MineSweeperRipeoff
         public CellType cellType;
         public bool isRevealed;
         public bool isFlagged;
+        public bool isForcePress;
         public int number;
 
         public UnityAction<int> OnRevealed;
@@ -58,6 +59,11 @@ namespace MineSweeperRipeoff
         public void ClearMine()
         {
             cellType = number == 0 ? CellType.Empty : CellType.Number;
+        }
+
+        public void MarkAsForceStartCell()
+        {
+            isForcePress = true;
         }
 
         public void IncreaseCount()

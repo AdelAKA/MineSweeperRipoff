@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,24 +10,27 @@ namespace MineSweeperRipeoff
         //[SerializeField] NumbersSpawner numbersSpawner;
         [SerializeField] ParticleSystem numbersParticle;
 
-        [Header("GameModeButton")]
-        [SerializeField] Button gameModeButton;
+        [Header("Settings Panel")]
+        [SerializeField] SettingsUi settingsUi;
+        [SerializeField] Button settingsButton;
 
         [Header("Scores")]
+        [SerializeField] TMP_Text gameModeText;
         [SerializeField] TMP_Text bestScoreEasyText;
         [SerializeField] TMP_Text bestScoreMediumText;
         [SerializeField] TMP_Text bestScoreHardText;
 
         private void Start()
         {
-            gameModeButton.onClick.AddListener(SwitchGameMode);
+            settingsButton.onClick.AddListener(settingsUi.Show);
+            GameManager.Instance.OnGameModeChanged += UpdateSocres;
         }
 
         public override void Show()
         {
             base.Show();
             UpdateSocres();
-            UpdateGameModeButton();
+            settingsUi.Hide();
             ToggleSpawning(true);
         }
 
@@ -36,18 +38,6 @@ namespace MineSweeperRipeoff
         {
             base.Hide();
             ToggleSpawning(false);
-        }
-
-        private void UpdateGameModeButton()
-        {
-            if (PlayerData.IsSpeedRunMode) gameModeButton.GetComponentInChildren<TMP_Text>().text = "Speed Run!";
-            else gameModeButton.GetComponentInChildren<TMP_Text>().text = "Chillax";
-        }
-
-        private void SwitchGameMode()
-        {
-            PlayerData.IsSpeedRunMode = !PlayerData.IsSpeedRunMode;
-            UpdateGameModeButton();
         }
 
         public void ToggleSpawning(bool spawn)
@@ -61,7 +51,9 @@ namespace MineSweeperRipeoff
 
         public void UpdateSocres()
         {
-            float easyScore = PlayerData.GetBestScore(DifficultyLevel.Easy);
+            gameModeText.text = GameManager.Instance.CurrentGameMode.ToString();
+
+            float easyScore = PlayerData.GetBestScore(DifficultyLevel.Easy, GameManager.Instance.CurrentGameMode);
             if (easyScore == 0)
                 bestScoreEasyText.text = "--:--";
             else
@@ -70,7 +62,7 @@ namespace MineSweeperRipeoff
                 bestScoreEasyText.text = string.Format("{0:D2}:{1:D2}", bestTime.Minutes, bestTime.Seconds);
             }
 
-            float mediumScore = PlayerData.GetBestScore(DifficultyLevel.Medium);
+            float mediumScore = PlayerData.GetBestScore(DifficultyLevel.Medium, GameManager.Instance.CurrentGameMode);
             if (mediumScore == 0)
                 bestScoreMediumText.text = "--:--";
             else
@@ -79,7 +71,7 @@ namespace MineSweeperRipeoff
                 bestScoreMediumText.text = string.Format("{0:D2}:{1:D2}", bestTime.Minutes, bestTime.Seconds);
             }
 
-            float hardScore = PlayerData.GetBestScore(DifficultyLevel.Hard);
+            float hardScore = PlayerData.GetBestScore(DifficultyLevel.Hard, GameManager.Instance.CurrentGameMode);
             if (hardScore == 0)
                 bestScoreHardText.text = "--:--";
             else

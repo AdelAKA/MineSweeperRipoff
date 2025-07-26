@@ -15,7 +15,7 @@ namespace MineSweeperRipeoff
         [SerializeField] SoundAudioClipDuo[] soundAudioClipDuosArray;
 
         private AudioSource _musicAudioSource;
-        private Queue<AudioSource> _audioSourceQueue;
+        private Queue<AudioSource> _sfxAudioSourceQueue;
 
         CancellationTokenSource _musicCancelationTokenSource;
 
@@ -32,28 +32,43 @@ namespace MineSweeperRipeoff
         {
             _musicCancelationTokenSource = new CancellationTokenSource();
 
-            _audioSourceQueue = new();
             _musicAudioSource = Instantiate(sfxPrefab, transform);
 
+            _sfxAudioSourceQueue = new();
             for (int i = 0; i < maxAudioSourceNumber; i++)
             {
                 AudioSource newSFX = Instantiate(sfxPrefab, transform);
                 newSFX.transform.parent = transform;
-                _audioSourceQueue.Enqueue(newSFX);
+                _sfxAudioSourceQueue.Enqueue(newSFX);
             }
+        }
+
+        public void ToggleSoundForSFX(bool isMute)
+        {
+            for (int i = 0; i < _sfxAudioSourceQueue.Count; i++)
+            {
+                AudioSource audioSource = _sfxAudioSourceQueue.Dequeue();
+                audioSource.mute = isMute;
+                _sfxAudioSourceQueue.Enqueue(audioSource);
+            }
+        }
+
+        public void ToggleSoundForMusic(bool isMute)
+        {
+            _musicAudioSource.mute = isMute;
         }
 
         public void PlaySound(ClipName clipName, float pitch = 1)
         {
             //GameObject soundGameObject = new GameObject("Sound");
             //AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
-            AudioSource audioSource = _audioSourceQueue.Dequeue();
+            AudioSource audioSource = _sfxAudioSourceQueue.Dequeue();
             audioSource.pitch = 1f;
             audioSource.Stop();
             audioSource.clip = GetAudioClip(clipName);
             audioSource.pitch = pitch;
             audioSource.Play();
-            _audioSourceQueue.Enqueue(audioSource);
+            _sfxAudioSourceQueue.Enqueue(audioSource);
         }
 
         public async void PlayMusic(ClipName clipName, bool loop = false)

@@ -28,7 +28,7 @@ namespace MineSweeperRipeoff
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                CurrentGrid.Initialize(gridSize, minesCount);
+                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance);
                 gridSolver = new GridSolver(CurrentGrid, delayBetweenMoves);
 
                 fieldGrid.Initialize(gridSolver);

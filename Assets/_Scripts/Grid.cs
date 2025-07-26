@@ -103,7 +103,7 @@ namespace MineSweeperRipeoff
             Debug.Log(RemainingMines);
         }
 
-        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget)
+        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget, GameMode gameMode)
         {
             if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
             if (numberOfMinesTraget.HasValue) this.numberOfMines = numberOfMinesTraget.Value;
@@ -117,7 +117,15 @@ namespace MineSweeperRipeoff
             ResetGrid();
 
             Vector2Int startCell;
-            (cells, startCell) = await gridGenerator.GenerateNoChanceGrid(gridSize, numberOfMines);
+            if (gameMode == GameMode.Chance)
+            {
+                cells = gridGenerator.GenerateRandomGrid(gridSize, numberOfMines);
+            }
+            else // No Chance Grid
+            {
+                (cells, startCell) = await gridGenerator.GenerateNoChanceGrid(gridSize, numberOfMines);
+                cells[startCell.x, startCell.y].MarkAsForceStartCell();
+            }
 
             {
                 //cells = new Cell[gridSize.x, gridSize.y];
@@ -257,13 +265,27 @@ namespace MineSweeperRipeoff
             }
         }
 
-        private void MakeFirstMove(Vector2Int coordinates)
+        private void TryMakeFirstMove(Vector2Int coordinates)
         {
-            if (isDebug) Debug.Log("Is First Move");
-            SwitchMinesAroundFirstMove(coordinates);
-            TryRevealCell(coordinates);
-            CheckGameState();
-            CurrentState = GridState.Playing;
+            if (PlayerData.CurrentGameMode == GameMode.Chance)
+            {
+                if (isDebug) Debug.Log("Is First Move");
+                SwitchMinesAroundFirstMove(coordinates);
+                TryRevealCell(coordinates);
+                CheckGameState();
+                CurrentState = GridState.Playing;
+                isFirstMove = false;
+            }
+            else // No Chance Grid
+            {
+                if (cells[coordinates.x, coordinates.y].isForcePress)
+                {
+                    TryRevealCell(coordinates);
+                    CheckGameState();
+                    CurrentState = GridState.Playing;
+                    isFirstMove = false;
+                }
+            }
         }
 
         public void MakeMove(Vector2Int coordinates)
@@ -271,8 +293,7 @@ namespace MineSweeperRipeoff
             if (cells[coordinates.x, coordinates.y].isFlagged) return;
             if (isFirstMove)
             {
-                MakeFirstMove(coordinates);
-                isFirstMove = false;
+                TryMakeFirstMove(coordinates);
                 return;
             }
             bool isValid = true;
