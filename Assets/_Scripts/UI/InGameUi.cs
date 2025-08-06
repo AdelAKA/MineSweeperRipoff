@@ -110,6 +110,10 @@ namespace MineSweeperRipeoff
                     OnNewGame();
                     faceImage.sprite = happyFaceSprite;
                     break;
+                case GridState.Playing:
+                    OnNewGame();
+                    faceImage.sprite = happyFaceSprite;
+                    break;
                 case GridState.Cleared:
                     OnWin(isNewScore);
                     faceImage.sprite = coolFaceSprite;
@@ -154,8 +158,8 @@ namespace MineSweeperRipeoff
                 description = "Hmmm?!\n" + string.Format("{0:D2}:{1:D2}", time.Minutes, time.Seconds);
             }
 
-            //await Awaitable.WaitForSecondsAsync(1);
-            await Task.Delay(1000);
+            await Awaitable.WaitForSecondsAsync(1);
+            //await Task.Delay(1000);
 
             endGameUi.Show("Board Cleared!", description);
         }
@@ -164,8 +168,8 @@ namespace MineSweeperRipeoff
         {
             if (!PlayerData.IsSpeedRunMode) poof.Play();
             SoundManager.Instance.PlaySound(ClipName.Poof);
-            await Task.Delay(500);
-            //await Awaitable.WaitForSecondsAsync(0.5f);
+            //await Task.Delay(500);
+            await Awaitable.WaitForSecondsAsync(0.5f);
             endGameUi.Show("Mine?!");
         }
 

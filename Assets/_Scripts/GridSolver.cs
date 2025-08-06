@@ -238,6 +238,7 @@ namespace MineSweeperRipeoff
                     foreach (var possibleMineCell in possibleMineCells)
                     {
                         if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                        //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
                         predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                         UpdateCellFlagState(possibleMineCell);
                         SubtractCountFromSurroundingCells(possibleMineCell);
@@ -286,6 +287,7 @@ namespace MineSweeperRipeoff
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
                 if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
                 TryRevealCell(cell);
             }
             foreach (var cell in cellsToUntarget)
@@ -382,12 +384,15 @@ namespace MineSweeperRipeoff
             foreach (var cell in cellsToReveal)
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
+                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
                 if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
                 TryRevealCell(cell);
             }
             foreach (var possibleMineCell in cellsToMark)
             {
                 if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                 predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                 UpdateCellFlagState(possibleMineCell);
                 SubtractCountFromSurroundingCells(possibleMineCell);
@@ -510,11 +515,15 @@ namespace MineSweeperRipeoff
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
                 if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                 TryRevealCell(cell);
             }
             foreach (var possibleMineCell in cellsToMark)
             {
                 if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                 predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                 UpdateCellFlagState(possibleMineCell);
                 SubtractCountFromSurroundingCells(possibleMineCell);
@@ -674,6 +683,8 @@ namespace MineSweeperRipeoff
                 foreach (var certainMineCell in certainMineCells)
                 {
                     if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                     predictedMines[certainMineCell.x, certainMineCell.y] = true;
                     UpdateCellFlagState(certainMineCell);
                     SubtractCountFromSurroundingCells(certainMineCell);
@@ -684,6 +695,8 @@ namespace MineSweeperRipeoff
                 {
                     if (cells[certainSafeCell.x, certainSafeCell.y].isRevealed) continue;
                     if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                     TryRevealCell(certainSafeCell);
                     isChanging = true;
                 }
@@ -720,6 +733,8 @@ namespace MineSweeperRipeoff
                 foreach (var certainMineCell in certainMineCells)
                 {
                     if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                     predictedMines[certainMineCell.x, certainMineCell.y] = true;
                     UpdateCellFlagState(certainMineCell);
                     SubtractCountFromSurroundingCells(certainMineCell);
@@ -730,6 +745,8 @@ namespace MineSweeperRipeoff
                 {
                     if (cells[certainSafeCell.x, certainSafeCell.y].isRevealed) continue;
                     if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                     TryRevealCell(certainSafeCell);
                     isChanging = true;
                 }

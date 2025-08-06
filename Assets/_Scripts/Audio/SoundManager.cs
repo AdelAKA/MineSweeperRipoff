@@ -83,8 +83,8 @@ namespace MineSweeperRipeoff
                 audioSource.volume -= Time.deltaTime;
                 try
                 {
-                    await Task.Delay(1);
-                    //await Awaitable.NextFrameAsync(_musicCancelationTokenSource.Token);
+                    //await Task.Delay(1);
+                    await Awaitable.NextFrameAsync(_musicCancelationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {

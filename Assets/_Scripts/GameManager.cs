@@ -209,8 +209,8 @@ namespace MineSweeperRipeoff
         {
             if (gridState == GridState.Boom)
             {
-                //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(0.5f);
-                if (!PlayerData.IsSpeedRunMode) await Task.Delay(500);
+                if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(0.5f);
+                //if (!PlayerData.IsSpeedRunMode) await Task.Delay(500);
 
                 await RevealTheMines();
                 ResetStreak();

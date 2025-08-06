@@ -20,9 +20,7 @@ namespace MineSweeperRipeoff
                 contentImage.enabled = true;
                 contentImage.sprite = mineSprite;
                 OpenedCellImage.color = referencedCell.isLosingCell ? clickedMineColor : revealedMineColoer;
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
-               if (!PlayerData.IsSpeedRunMode) HapticFeedback.MediumFeedback();
-#endif
+
             }
             else if (referencedCell.cellType == CellType.Number)
             {

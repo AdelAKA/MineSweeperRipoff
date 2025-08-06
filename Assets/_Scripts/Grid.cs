@@ -453,8 +453,8 @@ namespace MineSweeperRipeoff
 
             RevealCell(coordinates, sequenceCount);
 
-            //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(0.05f);
-            if (ShouldDelay) await Task.Delay(50);
+            if (ShouldDelay) await Awaitable.WaitForSecondsAsync(0.05f);
+            //if (ShouldDelay) await Task.Delay(50);
 
             foreach (var direction in DirectionsList)
             {
@@ -492,8 +492,8 @@ namespace MineSweeperRipeoff
                 {
                     if (cells[i, j].cellType == CellType.Mine && !cells[i, j].isRevealed)
                     {
-                        //if (!PlayerData.IsSpeedRunMode) await Awaitable.WaitForSecondsAsync(TimeToWait);
-                        if (ShouldDelay) await Task.Delay((int)(TimeToWait * 1000));
+                        if (ShouldDelay) await Awaitable.WaitForSecondsAsync(TimeToWait);
+                        //if (ShouldDelay) await Task.Delay((int)(TimeToWait * 1000));
 
                         TimeToWait *= 0.8f;
                         if (cells[i, j].isFlagged) cells[i, j].SetFlagState(false);
