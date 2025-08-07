@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7930607998485396851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5024387791923253372}
+  - component: {fileID: 1770738091087886061}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5024387791923253372
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7930607998485396851}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1770738091087886061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7930607998485396851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e4fbe99ff43845479777613ed7ccfb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAudioSourceNumber: 20
+  sfxPrefab: {fileID: 99200538153321053, guid: e26a3d6f468eb8541be97af90c4de1be, type: 3}
+  soundAudioClipDuosArray:
+  - clipName: 1001
+    clipCategory: 1
+    audioClip: {fileID: 8300000, guid: d4732d506d86bb04ba9b838f2eb760f0, type: 3}
+  - clipName: 2001
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: 6dbdf236814d69a479b3f810bcd4e9e4, type: 3}
+  - clipName: 2002
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: 980a12a0b134cd846854f358c106bd1b, type: 3}
+  - clipName: 2003
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: ebaa96fb7046d234bb9b95008f4f16dd, type: 3}
+  - clipName: 2004
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: a93e17aa4dd557a428a8cb5728e584a8, type: 3}
+  - clipName: 2005
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: b1745338dacdd7a4293c94f117532072, type: 3}
+  - clipName: 2006
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: 5711821bd60ad494dacc13c65c20360d, type: 3}
+  - clipName: 2007
+    clipCategory: 2
+    audioClip: {fileID: 0}
+  - clipName: 3001
+    clipCategory: 2
+    audioClip: {fileID: 8300000, guid: b7c769ba78c07f047aa6f1050799be40, type: 3}
+  - clipName: 3002
+    clipCategory: 4
+    audioClip: {fileID: 8300000, guid: 5e8baa516747b5c47bce5fc867aef94b, type: 3}
+  - clipName: 3003
+    clipCategory: 4
+    audioClip: {fileID: 8300000, guid: 93981e6d4626a214a84928f31b81d525, type: 3}
+  - clipName: 3004
+    clipCategory: 4
+    audioClip: {fileID: 0}

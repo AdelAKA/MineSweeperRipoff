@@ -65,8 +65,11 @@ namespace MineSweeperRipeoff
                 timer += Time.deltaTime;
         }
 
-        public void RequestGame(DifficultyLevel level)
+        public async void RequestGame(DifficultyLevel level)
         {
+            await LoadingScreen.Instance.Show();
+            TabsManager.Instance.ShowGameScreen();
+
             currentDifficulty = level;
             if (DataSaver.SavedGridExists(SavePath))
             {
@@ -78,6 +81,8 @@ namespace MineSweeperRipeoff
                 Debug.Log("No Saved Grid");
                 StartNewGame();
             }
+
+            LoadingScreen.Instance.Hide();
         }
 
         public void StartNewGame()
@@ -123,12 +128,16 @@ namespace MineSweeperRipeoff
             OnGridStateChanged?.Invoke(CurrentGridState, false);
         }
 
-        public void RequestRestart()
+        public async void RequestRestart()
         {
+            await LoadingScreen.Instance.Show();
+
             StartNewGame();
+
+            LoadingScreen.Instance.Hide();
         }
 
-        public void RequestFinish()
+        public async void RequestFinish()
         {
             if (!CurrentGrid.IsFirstMove)
             {
@@ -138,7 +147,10 @@ namespace MineSweeperRipeoff
                 DataSaver.SaveGrid(SavePath, gridSaveData);
             }
 
+            await LoadingScreen.Instance.Show();
+
             TabsManager.Instance.ShowStartScreen();
+            LoadingScreen.Instance.Hide();
         }
 
         public void UpdateCellFlagState(Vector2Int targetCoordinates)

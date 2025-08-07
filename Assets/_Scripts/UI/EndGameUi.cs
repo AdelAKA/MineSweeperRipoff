@@ -17,10 +17,12 @@ namespace MineSweeperRipeoff
         {
             rastartButton.onClick.AddListener(GameManager.Instance.RequestRestart);
 
-            backButton.onClick.AddListener(() =>
+            backButton.onClick.AddListener(async () =>
             {
+                await LoadingScreen.Instance.Show();
                 Hide();
                 TabsManager.Instance.ShowStartScreen();
+                LoadingScreen.Instance.Hide();
             });
         }
         

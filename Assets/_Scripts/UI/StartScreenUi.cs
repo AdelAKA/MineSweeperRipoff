@@ -14,6 +14,11 @@ namespace MineSweeperRipeoff
         [SerializeField] SettingsUi settingsUi;
         [SerializeField] Button settingsButton;
 
+        [Header("Game Mode Buttons")]
+        [SerializeField] Button easyDifficultyButton;
+        [SerializeField] Button mediumDifficultyButton;
+        [SerializeField] Button hardDifficultyButton;
+
         [Header("Scores")]
         [SerializeField] TMP_Text gameModeText;
         [SerializeField] TMP_Text bestScoreEasyText;
@@ -24,6 +29,10 @@ namespace MineSweeperRipeoff
         {
             settingsButton.onClick.AddListener(settingsUi.Show);
             GameManager.Instance.OnGameModeChanged += UpdateSocres;
+
+            easyDifficultyButton.onClick.AddListener(() => GameManager.Instance.RequestGame(DifficultyLevel.Easy));
+            mediumDifficultyButton.onClick.AddListener(() => GameManager.Instance.RequestGame(DifficultyLevel.Medium));
+            hardDifficultyButton.onClick.AddListener(() => GameManager.Instance.RequestGame(DifficultyLevel.Hard));
         }
 
         public override void Show()
