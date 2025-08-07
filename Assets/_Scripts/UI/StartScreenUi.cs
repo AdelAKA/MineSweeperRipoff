@@ -10,9 +10,14 @@ namespace MineSweeperRipeoff
         //[SerializeField] NumbersSpawner numbersSpawner;
         [SerializeField] ParticleSystem numbersParticle;
 
+
         [Header("Settings Panel")]
         [SerializeField] SettingsUi settingsUi;
         [SerializeField] Button settingsButton;
+
+        [Header("Credits Panel")]
+        [SerializeField] CreditsUi creditsUi;
+        [SerializeField] Button creditsButton;
 
         [Header("Game Mode Buttons")]
         [SerializeField] Button easyDifficultyButton;
@@ -28,6 +33,7 @@ namespace MineSweeperRipeoff
         private void Start()
         {
             settingsButton.onClick.AddListener(settingsUi.Show);
+            creditsButton.onClick.AddListener(creditsUi.Show);
             GameManager.Instance.OnGameModeChanged += UpdateSocres;
 
             easyDifficultyButton.onClick.AddListener(() => GameManager.Instance.RequestGame(DifficultyLevel.Easy));
@@ -40,6 +46,7 @@ namespace MineSweeperRipeoff
             base.Show();
             UpdateSocres();
             settingsUi.Hide();
+            creditsUi.Hide();
             ToggleSpawning(true);
         }
 
