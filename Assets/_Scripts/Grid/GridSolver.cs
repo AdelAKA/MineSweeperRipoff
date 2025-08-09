@@ -211,6 +211,7 @@ namespace MineSweeperRipeoff
         private async Task<bool> TrySolveForCorrespondingNumberOfUnrevealedCells()
         {
             List<Vector2Int> possibleMineCells = new List<Vector2Int>();
+
             bool isGridChanged = false;
             // Loop through unprocessed number cells
             foreach (var monitoredCell in monitoredCells)
@@ -237,11 +238,13 @@ namespace MineSweeperRipeoff
                     isGridChanged = true;
                     foreach (var possibleMineCell in possibleMineCells)
                     {
-                        if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                        //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                        //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                        if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+
                         predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                         UpdateCellFlagState(possibleMineCell);
                         SubtractCountFromSurroundingCells(possibleMineCell);
+                        //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
                     }
                 }
             }
@@ -258,6 +261,8 @@ namespace MineSweeperRipeoff
             for (int i = monitoredCells.Count - 1; i >= 0; i--)
             {
                 var targetCell = monitoredCells.ElementAt(i);
+                if (trackedNumbers[targetCell.x, targetCell.y] != 0) continue;
+
                 unrevealedCells.Clear();
                 // For each surrounding cell, check for a mine count and empty cells
                 foreach (var direction in DirectionsList)
@@ -276,9 +281,11 @@ namespace MineSweeperRipeoff
                 {
                     isGridChanged = true;
                     //targetCells.Remove(targetCell);
+                    //if (cellsToUntarget.Contains(targetCell)) Debug.Log($"adding {targetCell} again to cellsToUntarget");
                     cellsToUntarget.Add(targetCell);
                     foreach (var unrevealedCell in unrevealedCells)
                     {
+                        //if (cellsToReveal.Contains(unrevealedCell)) Debug.Log($"adding {unrevealedCell} again to cellsToReveal");
                         cellsToReveal.Add(unrevealedCell);
                     }
                 }
@@ -286,8 +293,8 @@ namespace MineSweeperRipeoff
             foreach (var cell in cellsToReveal)
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
-                if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
                 TryRevealCell(cell);
             }
             foreach (var cell in cellsToUntarget)
@@ -359,39 +366,38 @@ namespace MineSweeperRipeoff
             // Loop through unprocessed number cells
             for (int i = monitoredCells.Count - 1; i >= 0; i--)
             {
+                Vector2Int monitoredCell = monitoredCells.ElementAt(i);
+                if (trackedNumbers[monitoredCell.x, monitoredCell.y] != 2) continue;
+
                 Vector2Int? safeCell = null;
                 List<Vector2Int> mineCells = new List<Vector2Int>();
 
-                Vector2Int monitoredCell = monitoredCells.ElementAt(i);
-                if (trackedNumbers[monitoredCell.x, monitoredCell.y] == 2)
+                // Check top and bottom cells for 1
+                if (Check1Condition(monitoredCell, Vector2Int.up)
+                    || Check1Condition(monitoredCell, Vector2Int.right))
                 {
-                    // Check top and bottom cells for 1
-                    if (Check1Condition(monitoredCell, Vector2Int.up)
-                        || Check1Condition(monitoredCell, Vector2Int.right))
+                    CheckFor3UnPredictedCellsInARow(monitoredCell, out safeCell, out mineCells);
+                    if (safeCell.HasValue)
                     {
-                        CheckFor3UnPredictedCellsInARow(monitoredCell, out safeCell, out mineCells);
-                        if (safeCell.HasValue)
-                        {
-                            //Debug.Log($"Matched 121 Pattern at {monitoredCell}");
-                            cellsToReveal.Add(safeCell.Value);
-                            cellsToUntarget.Add(monitoredCell);
-                            mineCells.ForEach(m => cellsToMark.Add(m));
-                            isGridChanged = true;
-                        }
+                        Debug.Log($"Matched 121 Pattern at {monitoredCell}");
+                        cellsToReveal.Add(safeCell.Value);
+                        cellsToUntarget.Add(monitoredCell);
+                        mineCells.ForEach(m => cellsToMark.Add(m));
+                        isGridChanged = true;
                     }
                 }
             }
             foreach (var cell in cellsToReveal)
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
-                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
-                if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
                 TryRevealCell(cell);
             }
             foreach (var possibleMineCell in cellsToMark)
             {
-                if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                 predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                 UpdateCellFlagState(possibleMineCell);
@@ -490,39 +496,41 @@ namespace MineSweeperRipeoff
             // Loop through unprocessed number cells
             for (int i = monitoredCells.Count - 1; i >= 0; i--)
             {
+                Vector2Int targetCell = monitoredCells.ElementAt(i);
+                if (trackedNumbers[targetCell.x, targetCell.y] != 2) continue;
+
                 List<Vector2Int> safeCells = new List<Vector2Int>();
                 List<Vector2Int> mineCells = new List<Vector2Int>();
 
-                Vector2Int targetCell = monitoredCells.ElementAt(i);
-                if (trackedNumbers[targetCell.x, targetCell.y] == 2)
+                if (CheckPatternCondition(targetCell, Vector2Int.up))
                 {
-                    if (CheckPatternCondition(targetCell, Vector2Int.up))
-                    {
-                        CheckFor4UnRevealedCellsInARow(targetCell, Vector2Int.up, out safeCells, out mineCells);
-                        if (safeCells.Count != 0) // we found a match
-                        {
-                            Debug.Log($"Matched 1221 Pattern at {targetCell}");
-                            safeCells.ForEach(s => cellsToReveal.Add(s));
-                            mineCells.ForEach(m => cellsToMark.Add(m));
-                            cellsToUntarget.Add(targetCell);
-                            isGridChanged = true;
-                            continue;
-                        }
-                    }
+                    CheckFor4UnRevealedCellsInARow(targetCell, Vector2Int.up, out safeCells, out mineCells);
                 }
+                else if (CheckPatternCondition(targetCell, Vector2Int.right))
+                {
+                    CheckFor4UnRevealedCellsInARow(targetCell, Vector2Int.right, out safeCells, out mineCells);
+                }
+                if (safeCells.Count == 0) continue;
+
+                Debug.Log($"Matched 1221 Pattern at {targetCell}");
+                safeCells.ForEach(s => cellsToReveal.Add(s));
+                mineCells.ForEach(m => cellsToMark.Add(m));
+                cellsToUntarget.Add(targetCell);
+                isGridChanged = true;
             }
+
             foreach (var cell in cellsToReveal)
             {
                 if (cells[cell.x, cell.y].isRevealed) continue;
-                if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                 TryRevealCell(cell);
             }
             foreach (var possibleMineCell in cellsToMark)
             {
-                if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                 predictedMines[possibleMineCell.x, possibleMineCell.y] = true;
                 UpdateCellFlagState(possibleMineCell);
@@ -682,8 +690,8 @@ namespace MineSweeperRipeoff
                 bool isChanging = false;
                 foreach (var certainMineCell in certainMineCells)
                 {
-                    if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                    //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                     predictedMines[certainMineCell.x, certainMineCell.y] = true;
                     UpdateCellFlagState(certainMineCell);
@@ -694,8 +702,8 @@ namespace MineSweeperRipeoff
                 foreach (var certainSafeCell in certainSafeCells)
                 {
                     if (cells[certainSafeCell.x, certainSafeCell.y].isRevealed) continue;
-                    if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                    //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                     TryRevealCell(certainSafeCell);
                     isChanging = true;
@@ -732,8 +740,8 @@ namespace MineSweeperRipeoff
 
                 foreach (var certainMineCell in certainMineCells)
                 {
-                    if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                    //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                     predictedMines[certainMineCell.x, certainMineCell.y] = true;
                     UpdateCellFlagState(certainMineCell);
@@ -744,8 +752,8 @@ namespace MineSweeperRipeoff
                 foreach (var certainSafeCell in certainSafeCells)
                 {
                     if (cells[certainSafeCell.x, certainSafeCell.y].isRevealed) continue;
-                    if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
-                    //if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
+                    //if (_delay != 0) await Task.Delay((int)(_delay * 1000f));
+                    if (_delay != 0) await Awaitable.WaitForSecondsAsync(_delay);
 
                     TryRevealCell(certainSafeCell);
                     isChanging = true;
@@ -781,6 +789,8 @@ namespace MineSweeperRipeoff
                 bool is121PatternFound = await TryFind121Pattern();
                 bool is1221PatternFound = await TryFind1221Pattern();
                 isChanging = isMinesPredicted || isCellsRevealed || is121PatternFound || is1221PatternFound;
+                //isChanging = isMinesPredicted;
+
                 if (isChanging) continue;
                 else
                 {
@@ -804,7 +814,8 @@ namespace MineSweeperRipeoff
             {
                 for (int j = 0; j < gridSize.y; j++)
                 {
-                    if (cells[i, j].number == 0) emptyCells.Add(new Vector2Int(i, j));
+                    //if (cells[i, j].number == 0) emptyCells.Add(new Vector2Int(i, j));
+                    if (cells[i, j].number == 0) return new Vector2Int(i, j);
                 }
             }
             return emptyCells[UnityEngine.Random.Range(0, emptyCells.Count)];

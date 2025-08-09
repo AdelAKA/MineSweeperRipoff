@@ -79,7 +79,7 @@ namespace MineSweeperRipeoff
 
         public async Task<(Cell[,], Vector2Int)> GenerateNoChanceGrid(Vector2Int gridSizeTarget, int numberOfMinesTarget)
         {
-            GridSolver gridSolver;
+            OptimizedGridSolver gridSolver;
             Cell[,] testCells;
             Vector2Int startCell;
             do
@@ -87,7 +87,7 @@ namespace MineSweeperRipeoff
                 Debug.Log("Testing Grid");
                 testCells = GenerateRandomGrid(gridSizeTarget, numberOfMinesTarget);
                 Debug.Log(testCells.GetLength(0) + ", " + testCells.GetLength(1));
-                gridSolver = new GridSolver(testCells, numberOfMinesTarget);
+                gridSolver = new OptimizedGridSolver(testCells, numberOfMinesTarget);
                 startCell = await gridSolver.TrySolve();
             } while (gridSolver.CurrentState != GridState.Cleared);
             // else generate new grid

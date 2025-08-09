@@ -17,28 +17,48 @@ namespace MineSweeperRipeoff
 
         private Grid CurrentGrid;
         [SerializeField] GridSolver gridSolver;
+        [SerializeField] OptimizedGridSolver gridSolver2;
+
 
         private void Start()
         {
-            //CurrentGrid = new GridSolver(delayBetweenMoves, usePredefinedGrid);
-            CurrentGrid = new Grid();
+            //CurrentGrid = new Grid();
         }
 
         private async void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
+                CurrentGrid = new OptimizedGridSolver(delayBetweenMoves, usePredefinedGrid);
+
+                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance);
+                gridSolver2 = new OptimizedGridSolver(CurrentGrid, delayBetweenMoves);
+
+                fieldGrid.Initialize(gridSolver2);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                CurrentGrid = new GridSolver(delayBetweenMoves, usePredefinedGrid);
+
                 CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance);
                 gridSolver = new GridSolver(CurrentGrid, delayBetweenMoves);
 
                 fieldGrid.Initialize(gridSolver);
             }
 
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                UnityEngine.Debug.Log("started");
+                await gridSolver2.TrySolve();
+                UnityEngine.Debug.Log(gridSolver2.CurrentState);
+                UnityEngine.Debug.Log("ended");
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
             {
                 UnityEngine.Debug.Log("started");
                 await gridSolver.TrySolve();
-                UnityEngine.Debug.Log(gridSolver.CurrentState);
+                UnityEngine.Debug.Log(gridSolver2.CurrentState);
                 UnityEngine.Debug.Log("ended");
             }
         }

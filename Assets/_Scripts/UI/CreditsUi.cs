@@ -9,7 +9,7 @@ namespace MineSweeperRipeoff
     {
         [SerializeField] Button closeButton;
 
-        public TMP_TextEventHandler TextEventHandler;
+        public LinkHandler linkHandler;
 
         //private List<string> urls = new List<string>()
         //{
@@ -34,18 +34,17 @@ namespace MineSweeperRipeoff
 
         private void OnEnable()
         {
-            if (TextEventHandler != null)
+            if (linkHandler != null)
             {
-                TextEventHandler.onLinkSelection.AddListener(OnLinkSelection);
-                Debug.Log(TextEventHandler.onLinkSelection.GetPersistentEventCount());
+                linkHandler.onLinkSelection.AddListener(OnLinkSelection);
             }
         }
 
         private void OnDisable()
         {
-            if (TextEventHandler != null)
+            if (linkHandler != null)
             {
-                TextEventHandler.onLinkSelection.RemoveListener(OnLinkSelection);
+                linkHandler.onLinkSelection.RemoveListener(OnLinkSelection);
             }
         }
 

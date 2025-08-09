@@ -32,7 +32,7 @@ namespace MineSweeperRipeoff
         protected int numberOfRevealedCells;
         private List<Vector2Int> availableCellsForMines;
 
-        protected List<Vector2Int> DirectionsList = new List<Vector2Int>()
+        protected static readonly List<Vector2Int> DirectionsList = new List<Vector2Int>()
         {
             new Vector2Int( 0,  0),
             new Vector2Int( 0,  1),
