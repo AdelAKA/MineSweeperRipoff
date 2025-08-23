@@ -319,7 +319,7 @@ MonoBehaviour:
   numbersCollection: {fileID: 11400000, guid: 577274e1cb5148a4a996d5188a47dc9a, type: 2}
   flagSprite: {fileID: 21300000, guid: f6e337c6d4b6f3d468566afed0d683c5, type: 3}
   mineSprite: {fileID: 21300000, guid: bab377f0d5280c048a197c8921ec8751, type: 3}
-  startMarkSprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  startMarkSprite: {fileID: 21300000, guid: ecca1634c46c95841b15f5581ec0b2f8, type: 3}
   clickedMineColor: {r: 1, g: 0, b: 0, a: 1}
   revealedMineColoer: {r: 0.4245283, g: 0, b: 0, a: 1}
   ClosedCellImage: {fileID: 3244945228038205765}

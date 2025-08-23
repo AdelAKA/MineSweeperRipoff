@@ -26,12 +26,11 @@ namespace MineSweeperRipeoff
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
             }
-            else Destroy(gameObject);
-        }
-
-        private void Start()
-        {
-            _musicCancelationTokenSource = new CancellationTokenSource();
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
 
             _musicAudioSource = Instantiate(sfxPrefab, transform);
 
@@ -42,6 +41,11 @@ namespace MineSweeperRipeoff
                 newSFX.transform.parent = transform;
                 _sfxAudioSourceQueue.Enqueue(newSFX);
             }
+        }
+
+        private void Start()
+        {
+            _musicCancelationTokenSource = new CancellationTokenSource();
         }
 
         public void ToggleSoundForSFX(bool isMute)

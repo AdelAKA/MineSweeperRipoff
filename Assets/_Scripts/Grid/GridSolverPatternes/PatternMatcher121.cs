@@ -79,7 +79,7 @@ namespace MineSweeperRipeoff
                 CheckFor3UnPredictedCellsInARow(monitoredCell, out safeCell, out mineCells);
                 if (safeCell.HasValue)
                 {
-                    Debug.Log($"Matched 121 Pattern at {monitoredCell}");
+                    //Debug.Log($"Matched 121 Pattern at {monitoredCell}");
                     //if (cellsToReveal.Contains(safeCell.Value)) Debug.Log($"adding {safeCell.Value} again to cellsToReveal");
                     cellsToReveal.Add(safeCell.Value);
                     //if (cellsToUntarget.Contains(monitoredCell)) Debug.Log($"adding {monitoredCell} again to cellsToUntarget");

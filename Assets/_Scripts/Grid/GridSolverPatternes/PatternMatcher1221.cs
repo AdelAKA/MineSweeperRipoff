@@ -101,6 +101,7 @@ namespace MineSweeperRipeoff
             List<Vector2Int> safeCells = new List<Vector2Int>();
             List<Vector2Int> mineCells = new List<Vector2Int>();
 
+            // try to match the pattern vertically or horizontally
             if (CheckPatternCondition(targetCell, Vector2Int.up))
             {
                 CheckFor4UnRevealedCellsInARow(targetCell, Vector2Int.up, out safeCells, out mineCells);
@@ -110,6 +111,7 @@ namespace MineSweeperRipeoff
                 CheckFor4UnRevealedCellsInARow(targetCell, Vector2Int.right, out safeCells, out mineCells);
             }
 
+            // no match was found
             if (safeCells.Count == 0) return false;
             //Debug.Log($"Matched 1221 Pattern at {targetCell}");
 

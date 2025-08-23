@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if UNITY_ANDROID
 using CandyCoded.HapticFeedback;
 #endif
 
@@ -88,7 +88,7 @@ namespace MineSweeperRipeoff
                 contentImage.enabled = true;
                 contentImage.sprite = mineSprite;
                 OpenedCellImage.color = referencedCell.isLosingCell ? clickedMineColor : revealedMineColoer;
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if UNITY_ANDROID
                if (!PlayerData.IsSpeedRunMode) HapticFeedback.MediumFeedback();
 #endif
             }
@@ -162,7 +162,7 @@ namespace MineSweeperRipeoff
                     TryFlagCell();
                 }
 
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if UNITY_ANDROID
                 HapticFeedback.LightFeedback();
 #endif
             }

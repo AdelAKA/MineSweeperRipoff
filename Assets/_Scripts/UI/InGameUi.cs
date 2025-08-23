@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if Unity_ANDROID
 using CandyCoded.HapticFeedback;
 #endif
 
@@ -180,7 +180,7 @@ namespace MineSweeperRipeoff
                 GameManager.Instance.CurrentMoveType = MoveType.Clear;
                 clearButton.OnSelect();
                 flagButton.OnDeselect();
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if UNITY_ANDROID
                 HapticFeedback.LightFeedback();
 #endif
             }
@@ -189,7 +189,7 @@ namespace MineSweeperRipeoff
                 GameManager.Instance.CurrentMoveType = MoveType.Flag;
                 clearButton.OnDeselect();
                 flagButton.OnSelect();
-#if !UNITY_EDITOR && !PLATFORM_STANDALONE_WIN
+#if UNITY_ANDROID
                 HapticFeedback.LightFeedback();
 #endif
             }

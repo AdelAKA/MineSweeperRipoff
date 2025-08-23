@@ -784,11 +784,11 @@ namespace MineSweeperRipeoff
             stopWatch.Start();
             while (isChanging)
             {
-                bool isMinesPredicted = await TrySolveForCorrespondingNumberOfSurroundingMines();
                 bool isCellsRevealed = await TrySolveForCorrespondingNumberOfUnrevealedCells();
+                bool isMinesPredicted = await TrySolveForCorrespondingNumberOfSurroundingMines();
                 bool is121PatternFound = await TryFind121Pattern();
                 bool is1221PatternFound = await TryFind1221Pattern();
-                isChanging = isMinesPredicted || isCellsRevealed || is121PatternFound || is1221PatternFound;
+                isChanging = isCellsRevealed || isMinesPredicted || is121PatternFound || is1221PatternFound;
                 //isChanging = isMinesPredicted;
 
                 if (isChanging) continue;

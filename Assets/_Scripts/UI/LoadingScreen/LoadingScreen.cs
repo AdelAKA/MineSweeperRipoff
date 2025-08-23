@@ -32,10 +32,7 @@ namespace MineSweeperRipeoff
             }
             else
                 Destroy(gameObject);
-        }
 
-        private void Start()
-        {
             InitialState();
             RandomizeCellsOrder();
             SetUp();
