@@ -31,8 +31,8 @@ namespace MineSweeperRipeoff
             {
                 CurrentGrid = new OptimizedGridSolver(delayBetweenMoves, usePredefinedGrid);
 
-                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance);
-                gridSolver2 = new OptimizedGridSolver(CurrentGrid, delayBetweenMoves);
+                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance, true);
+                gridSolver2 = new OptimizedGridSolver(CurrentGrid.GetCopyOfCells(), CurrentGrid.numberOfMines, delayBetweenMoves);
 
                 fieldGrid.Initialize(gridSolver2);
             }
@@ -41,8 +41,8 @@ namespace MineSweeperRipeoff
             {
                 CurrentGrid = new GridSolver(delayBetweenMoves, usePredefinedGrid);
 
-                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance);
-                gridSolver = new GridSolver(CurrentGrid, delayBetweenMoves);
+                CurrentGrid.Initialize(gridSize, minesCount, GameMode.NoChance, true);
+                gridSolver = new GridSolver(CurrentGrid.GetCopyOfCells(), CurrentGrid.numberOfMines, delayBetweenMoves);
 
                 fieldGrid.Initialize(gridSolver);
             }

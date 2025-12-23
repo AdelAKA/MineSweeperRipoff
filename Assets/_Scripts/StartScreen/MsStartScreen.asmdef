@@ -1,0 +1,20 @@
+{
+    "name": "MsUI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:d00f9e0ed0497094d915292e7b8cf7bc",
+        "GUID:7196185aa81964a44bac53f307ae434d",
+        "GUID:3460a9bfc01cff245b92119b058f1e2c",
+        "GUID:6aac0fb21accf8a4b9581468c38b2cf8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -6,7 +6,7 @@ namespace MineSweeperRipeoff
 {
     public class GridGenerator
     {
-        protected List<Vector2Int> DirectionsList = new List<Vector2Int>()
+        protected readonly List<Vector2Int> DirectionsList = new List<Vector2Int>()
         {
             new Vector2Int( 0,  0),
             new Vector2Int( 0,  1),

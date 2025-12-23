@@ -24,13 +24,21 @@ namespace MineSweeperRipeoff
                 OnGridStateChanged?.Invoke(_currentState);
             }
         }
-        public int RemainingMines { get; protected set; }
+        private GameMode _currentGameMode;
+        private bool _shouldDelay;
+
+        // Properties
+        public int RemainingUnflaggedMines { get; protected set; }
         public bool IsFirstMove { get; protected set; }
 
         protected GridGenerator gridGenerator = new GridGenerator();
         protected Cell[,] cells;
         protected int numberOfRevealedCells;
         private List<Vector2Int> availableCellsForMines;
+
+        protected static readonly float REVEAL_DELAY = 0.05f;
+        protected static readonly float MINE_REVEAL_START_DELAY = 0.5f;
+        protected static readonly float MINE_REVEAL_DELAY_MULTIPLIER = 0.8f;
 
         protected static readonly List<Vector2Int> DirectionsList = new List<Vector2Int>()
         {
@@ -45,7 +53,6 @@ namespace MineSweeperRipeoff
             new Vector2Int(-1, -1),
         };
 
-        public virtual bool ShouldDelay => !PlayerData.IsSpeedRunMode;
         public Cell GetCell(Vector2Int targetCoordinates) => cells[targetCoordinates.x, targetCoordinates.y];
 
         public GridSaveData GetSaveData()
@@ -62,7 +69,7 @@ namespace MineSweeperRipeoff
             {
                 gridSize = this.gridSize,
                 numberOfMines = this.numberOfMines,
-                remainingMines = this.RemainingMines,
+                remainingMines = this.RemainingUnflaggedMines,
                 numberOfRevealedCells = this.numberOfRevealedCells,
                 cells = cellsToSave
             };
@@ -85,44 +92,6 @@ namespace MineSweeperRipeoff
 
         public Grid()
         {
-        }
-
-        public Grid(GridSaveData loadedGridData)
-        {
-            this.gridSize = loadedGridData.gridSize;
-            this.numberOfMines = loadedGridData.numberOfMines;
-            this.RemainingMines = loadedGridData.remainingMines;
-            this.IsFirstMove = false;
-            this.CurrentState = GridState.Playing;
-            this.numberOfRevealedCells = loadedGridData.numberOfRevealedCells;
-            OnGridStateChanged.RemoveAllListeners();
-
-            //ResetGrid();
-
-            cells = new Cell[gridSize.x, gridSize.y];
-            for (int i = 0; i < gridSize.x; i++)
-            {
-                for (int j = 0; j < gridSize.y; j++)
-                {
-                    //revealedGrid[i, j] = new Cell(cells[i, j]);
-                    cells[i, j] = new Cell(loadedGridData.cells[i * gridSize.y + j]);
-                }
-            }
-        }
-
-        public Grid(Grid copy)
-        {
-            this.gridSize = copy.gridSize;
-            this.numberOfMines = copy.numberOfMines;
-            this.RemainingMines = copy.RemainingMines;
-            this.IsFirstMove = copy.IsFirstMove;
-            this.CurrentState = copy.CurrentState;
-            this.numberOfRevealedCells = copy.numberOfRevealedCells;
-            OnGridStateChanged.RemoveAllListeners();
-
-            //ResetGrid();
-
-            cells = copy.GetCopyOfCells();
         }
 
         public Grid(Cell[,] cellsCopy, int numberOfMines)
@@ -149,20 +118,16 @@ namespace MineSweeperRipeoff
             CurrentState = GridState.NotStarted;
             numberOfRevealedCells = 0;
             OnGridStateChanged.RemoveAllListeners();
-            RemainingMines = numberOfMines;
-            Debug.Log(RemainingMines);
+            RemainingUnflaggedMines = numberOfMines;
+            Debug.Log(RemainingUnflaggedMines);
         }
 
-        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget, GameMode gameMode)
+        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTarget, GameMode gameMode, bool isSpeedRunMode)
         {
             if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
-            if (numberOfMinesTraget.HasValue) this.numberOfMines = numberOfMinesTraget.Value;
-
-            //isFirstMove = true;
-            //CurrentState = GridState.NotStarted;
-            //numberOfRevealedCells = 0;
-            //OnGridStateChanged.RemoveAllListeners();
-            //RemainingMines = numberOfMines;
+            if (numberOfMinesTarget.HasValue) this.numberOfMines = numberOfMinesTarget.Value;
+            this._currentGameMode = gameMode;
+            this._shouldDelay = !isSpeedRunMode;
 
             ResetGrid();
 
@@ -177,38 +142,30 @@ namespace MineSweeperRipeoff
                 cells[startCell.x, startCell.y].MarkAsForceStartCell();
             }
 
+        }
+
+        public void Initialize(GridSaveData loadedGridData, GameMode gameMode, bool isSpeedRunMode)
+        {
+            this.gridSize = loadedGridData.gridSize;
+            this.numberOfMines = loadedGridData.numberOfMines;
+            this.RemainingUnflaggedMines = loadedGridData.remainingMines;
+            this.IsFirstMove = false;
+            this.CurrentState = GridState.Playing;
+            this.numberOfRevealedCells = loadedGridData.numberOfRevealedCells;
+            this._currentGameMode = gameMode;
+            this._shouldDelay = !isSpeedRunMode;
+            OnGridStateChanged.RemoveAllListeners();
+
+            //ResetGrid();
+
+            cells = new Cell[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
             {
-                //cells = new Cell[gridSize.x, gridSize.y];
-
-                //if (isDebug) Debug.Log($"{cells.Length}");
-
-                //for (int i = 0; i < gridSize.x; i++)
-                //{
-                //    for (int j = 0; j < gridSize.y; j++)
-                //    {
-                //        if (isDebug) Debug.Log($"{i}, {j}, {gridSize}");
-                //        //Debug.Log($"{i < gridSize.x}");
-                //        cells[i, j] = new Cell(new Vector2Int(i, j));
-                //    }
-                //}
-
-                //availableCellsForMines = new List<Vector2Int>();
-                //for (int i = 0; i < gridSize.x; i++)
-                //{
-                //    for (int j = 0; j < gridSize.y; j++)
-                //    {
-                //        availableCellsForMines.Add(new Vector2Int(i, j));
-                //    }
-                //}
-
-                //for (int i = 0; i < numberOfMines; i++)
-                //{
-                //    int randomIndex = UnityEngine.Random.Range(0, availableCellsForMines.Count);
-
-                //    SetMineAndAddCountToSurroundingCells(availableCellsForMines[randomIndex]);
-
-                //    availableCellsForMines.RemoveAt(randomIndex);
-                //}
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    cells[i, j] = new Cell(loadedGridData.cells[i * gridSize.y + j]);
+                }
             }
         }
 
@@ -258,8 +215,8 @@ namespace MineSweeperRipeoff
                 return;
             }
             cells[coordinates.x, coordinates.y].SetFlagState(!cells[coordinates.x, coordinates.y].isFlagged);
-            if (cells[coordinates.x, coordinates.y].isFlagged) RemainingMines--;
-            else RemainingMines++;
+            if (cells[coordinates.x, coordinates.y].isFlagged) RemainingUnflaggedMines--;
+            else RemainingUnflaggedMines++;
         }
 
         public void SwitchMinesAroundFirstMove(Vector2Int coordinates)
@@ -317,7 +274,7 @@ namespace MineSweeperRipeoff
 
         private void TryMakeFirstMove(Vector2Int coordinates)
         {
-            if (PlayerData.CurrentGameMode == GameMode.Chance)
+            if (_currentGameMode == GameMode.Chance)
             {
                 if (isDebug) Debug.Log("Is First Move");
                 SwitchMinesAroundFirstMove(coordinates);
@@ -453,7 +410,7 @@ namespace MineSweeperRipeoff
 
             RevealCell(coordinates, sequenceCount);
 
-            if (ShouldDelay) await Awaitable.WaitForSecondsAsync(0.05f);
+            if (_shouldDelay) await Awaitable.WaitForSecondsAsync(REVEAL_DELAY);
             //if (ShouldDelay) await Task.Delay(50);
 
             foreach (var direction in DirectionsList)
@@ -484,7 +441,7 @@ namespace MineSweeperRipeoff
 
         public async Task RevealTheMines()
         {
-            float TimeToWait = 0.5f;
+            float TimeToWait = MINE_REVEAL_START_DELAY;
             int sequenceCount = 1;
             for (int i = 0; i < gridSize.x; i++)
             {
@@ -492,10 +449,10 @@ namespace MineSweeperRipeoff
                 {
                     if (cells[i, j].cellType == CellType.Mine && !cells[i, j].isRevealed)
                     {
-                        if (ShouldDelay) await Awaitable.WaitForSecondsAsync(TimeToWait);
+                        if (_shouldDelay) await Awaitable.WaitForSecondsAsync(TimeToWait);
                         //if (ShouldDelay) await Task.Delay((int)(TimeToWait * 1000));
 
-                        TimeToWait *= 0.8f;
+                        TimeToWait *= MINE_REVEAL_DELAY_MULTIPLIER;
                         if (cells[i, j].isFlagged) cells[i, j].SetFlagState(false);
                         cells[i, j].RevealCell(sequenceCount++);
                     }

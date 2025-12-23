@@ -14075,7 +14075,7 @@ MonoBehaviour:
   mobileModeButtons: {fileID: 1325421252}
   clearButton: {fileID: 1435470642}
   flagButton: {fileID: 1248953021}
-  endGameUi: {fileID: 276321397}
+  endGamePopup: {fileID: 276321397}
   confetti: {fileID: 806183033}
   poof: {fileID: 479661100}
 --- !u!114 &574828170
@@ -17518,7 +17518,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -36797,8 +36797,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b339994db712f241828be0781f512c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startTab: {fileID: 584104284}
-  gameTab: {fileID: 574828169}
+  tabNamePairs:
+  - tabName: 1
+    tabReference: {fileID: 584104284}
+  - tabName: 2
+    tabReference: {fileID: 574828169}
 --- !u!114 &1638627697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36821,6 +36824,7 @@ MonoBehaviour:
         m_Calls: []
   clearParticleEffectPool: {fileID: 12923309}
   BombParticleEffectPool: {fileID: 928890583}
+  gameSettings: {fileID: 11400000, guid: 08339eaa8d3a7aa4aae3b0f9a1e8fa2e, type: 2}
 --- !u!4 &1638627699
 Transform:
   m_ObjectHideFlags: 0
@@ -38664,7 +38668,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

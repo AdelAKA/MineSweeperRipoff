@@ -1,0 +1,16 @@
+{
+    "name": "MsSettings",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3460a9bfc01cff245b92119b058f1e2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
