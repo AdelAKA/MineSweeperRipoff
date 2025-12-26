@@ -312,14 +312,17 @@ namespace MineSweeperRipeoff
 
             List<Vector2Int> edgeCells = FindUnpredictedEdgeCells();
 
-            string unpredictedCellsString = "";
-            edgeCells.ForEach(e => unpredictedCellsString += e);
-            //Debug.Log("Unpredicted cells: " + unpredictedCellsString);
+            if (_isRecursiveDebug) // Debugging
+            {
+                string unpredictedCellsString = "";
+                edgeCells.ForEach(e => unpredictedCellsString += e);
+                //Debug.Log("Unpredicted cells: " + unpredictedCellsString);
 
-            edgeCells.Sort((x, y) => Compare(x, y));
-            string unpredictedSortedCellsString = "";
-            edgeCells.ForEach(e => unpredictedSortedCellsString += e);
-            //Debug.Log("Unpredicted cells after sort:" + unpredictedSortedCellsString);
+                edgeCells.Sort((x, y) => Compare(x, y));
+                string unpredictedSortedCellsString = "";
+                edgeCells.ForEach(e => unpredictedSortedCellsString += e);
+                //Debug.Log("Unpredicted cells after sort:" + unpredictedSortedCellsString);
+            }
 
             List<List<Vector2Int>> possibleGirdSolutions = new List<List<Vector2Int>>();
             TestAllPossibleCases(edgeCells, possibleGirdSolutions, new List<Vector2Int>(), -1);
@@ -352,8 +355,6 @@ namespace MineSweeperRipeoff
                 List<Vector2Int> certainMineCells = new List<Vector2Int>();
                 List<Vector2Int> certainSafeCells = new List<Vector2Int>();
 
-                bool isChanging = false;
-
                 foreach (var edgeCell in edgeCells)
                 {
                     // iF all possible solutions contain this cell as a mine
@@ -370,9 +371,14 @@ namespace MineSweeperRipeoff
                 await MarkCells(certainMineCells);
                 await RevealCells(certainSafeCells);
 
-                string s = "";
-                monitoredCells.ToList().ForEach(m => s += m);
-                //Debug.Log("monitored cells " + s);
+                if (_isRecursiveDebug)
+                {
+                    string s = "";
+                    monitoredCells.ToList().ForEach(m => s += m);
+                    //Debug.Log("monitored cells " + s);
+                }
+
+                bool isChanging = certainMineCells.Count > 0 || certainSafeCells.Count > 0;
 
                 return isChanging;
             }
@@ -451,19 +457,18 @@ namespace MineSweeperRipeoff
 
                         await MarkCells(cellsToMark);// marking cells can be applied off the bat because it doesn't modify the monitoredCells list
                         cellsToMark.Clear();
-                        if (patternWasMatched) break;
+                        if (patternWasMatched) break; // this boostes the speed if the patterns are ordered correctly
                     }
                 }
 
-                if (isChanging)
-                    await DealWithThose(cellsToReveal, cellsToMark, cellsToUntarget);
-
                 // brute forece is expencive and should not be applied until all the patterns fail to match
-                if (isChanging) continue;
-                else
+                if (isChanging)
                 {
-                    isChanging = await TryTestAllPossibleCases();
+                    await DealWithThose(cellsToReveal, cellsToMark, cellsToUntarget);
+                    continue;
                 }
+                else
+                    isChanging = await TryTestAllPossibleCases();
             }
             Debug.Log("Finish");
             stopWatch.Stop();
