@@ -10,12 +10,113 @@ namespace MineSweeperRipeoff
     public class GridSolver : Grid
     {
         private bool _isRecursiveDebug;
-        private bool _usePredefinedGrid;
         private float _delay;
 
-        public GridSolver(float delay = 1, bool usePredefinedGrid = false) : base()
+        public GridSolver(float delay = 0) : base()
         {
-            this._usePredefinedGrid = usePredefinedGrid;
+            this._delay = delay;
+            this.gridSize = new Vector2Int(16, 8);
+            #region OldGrids
+            //List<Vector2Int> minesList = new List<Vector2Int>()
+            //{
+            //    new Vector2Int(0, 0),
+            //    new Vector2Int(2, 0),
+            //    new Vector2Int(0, 6),
+            //    new Vector2Int(2, 6),
+            //    new Vector2Int(4, 2),
+            //    new Vector2Int(4, 3),
+            //    new Vector2Int(4, 4),
+            //    new Vector2Int(5, 0),
+            //    new Vector2Int(6, 0),
+            //};
+
+            //List<Vector2Int> minesList = new List<Vector2Int>()
+            //{
+            //    new Vector2Int(0, 2),
+            //    new Vector2Int(1, 4),
+            //    new Vector2Int(3, 4),
+            //    new Vector2Int(5, 0),
+            //    new Vector2Int(5, 3),
+            //    new Vector2Int(5, 7),
+            //    new Vector2Int(0, 6),
+            //    new Vector2Int(1, 6),
+            //    new Vector2Int(2, 6),
+            //};
+
+            //List<Vector2Int> minesList = new List<Vector2Int>()
+            //{
+            //    new Vector2Int(2, 2),
+            //    new Vector2Int(4, 1),
+            //    new Vector2Int(4, 3),
+            //    new Vector2Int(2, 5),
+            //    new Vector2Int(2, 6),
+            //    new Vector2Int(2, 7),
+            //    new Vector2Int(3, 5),
+            //    new Vector2Int(3, 6),
+            //    new Vector2Int(3, 7),
+            //};
+            //List<Vector2Int> minesList = new List<Vector2Int>()
+            //{
+            //    new Vector2Int(4, 1),
+            //    new Vector2Int(4, 2),
+            //    new Vector2Int(2, 2),
+            //    new Vector2Int(0, 5),
+            //    new Vector2Int(1, 5),
+            //    new Vector2Int(2, 5)
+            //};
+            #endregion
+            List<Vector2Int> minesList = new List<Vector2Int>()
+                {
+                    new Vector2Int(2, 0),
+                    new Vector2Int(0, 2),
+                    new Vector2Int(4, 4),
+                    new Vector2Int(0, 5),
+                    new Vector2Int(1, 5),
+                    new Vector2Int(2, 5),
+                    new Vector2Int(3, 7),
+                    new Vector2Int(5, 2),
+                    new Vector2Int(9, 3),
+                    new Vector2Int(10, 1),
+                    new Vector2Int(13, 5),
+                    new Vector2Int(13, 2),
+                    new Vector2Int(15, 7),
+                    new Vector2Int(9, 5),
+                    new Vector2Int(14, 1),
+                    new Vector2Int(7, 5),
+                    new Vector2Int(6, 2),
+                    new Vector2Int(7, 1),
+                    new Vector2Int(8, 3),
+                };
+            numberOfMines = minesList.Count;
+
+            IsFirstMove = true;
+            CurrentState = GridState.NotStarted;
+            numberOfRevealedCells = 0;
+            OnGridStateChanged.RemoveAllListeners();
+            RemainingUnflaggedMines = minesList.Count;
+
+            cells = new Cell[gridSize.x, gridSize.y];
+
+            if (isDebug) Debug.Log($"{cells.Length}");
+
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    if (isDebug) Debug.Log($"{i}, {j}, {gridSize}");
+                    //Debug.Log($"{i < gridSize.x}");
+                    cells[i, j] = new Cell(new Vector2Int(i, j));
+                }
+            }
+
+            for (int i = 0; i < minesList.Count; i++)
+            {
+                SetMineAndAddCountToSurroundingCells(minesList[i]);
+            }
+        }
+
+        public GridSolver(Vector2Int? gridSizeTarget, int? numberOfMinesTarget, GameMode gameMode, bool isSpeedRunMode = true, float delay = 0) : base(gridSizeTarget, numberOfMinesTarget, gameMode, isSpeedRunMode)
+        {
             this._delay = delay;
         }
 
@@ -40,112 +141,6 @@ namespace MineSweeperRipeoff
         private int[,] trackedNumbers;
         private bool[,] predictedMines;
         private HashSet<Vector2Int> monitoredCells = new HashSet<Vector2Int>();
-
-        public override void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTraget, GameMode gameMode, bool isSpeedRunMode = true)
-        {
-            if (!_usePredefinedGrid) base.Initialize(gridSizeTraget, numberOfMinesTraget, gameMode, isSpeedRunMode);
-            else
-            {
-                this.gridSize = new Vector2Int(16, 8);
-                #region OldGrids
-                //List<Vector2Int> minesList = new List<Vector2Int>()
-                //{
-                //    new Vector2Int(0, 0),
-                //    new Vector2Int(2, 0),
-                //    new Vector2Int(0, 6),
-                //    new Vector2Int(2, 6),
-                //    new Vector2Int(4, 2),
-                //    new Vector2Int(4, 3),
-                //    new Vector2Int(4, 4),
-                //    new Vector2Int(5, 0),
-                //    new Vector2Int(6, 0),
-                //};
-
-                //List<Vector2Int> minesList = new List<Vector2Int>()
-                //{
-                //    new Vector2Int(0, 2),
-                //    new Vector2Int(1, 4),
-                //    new Vector2Int(3, 4),
-                //    new Vector2Int(5, 0),
-                //    new Vector2Int(5, 3),
-                //    new Vector2Int(5, 7),
-                //    new Vector2Int(0, 6),
-                //    new Vector2Int(1, 6),
-                //    new Vector2Int(2, 6),
-                //};
-
-                //List<Vector2Int> minesList = new List<Vector2Int>()
-                //{
-                //    new Vector2Int(2, 2),
-                //    new Vector2Int(4, 1),
-                //    new Vector2Int(4, 3),
-                //    new Vector2Int(2, 5),
-                //    new Vector2Int(2, 6),
-                //    new Vector2Int(2, 7),
-                //    new Vector2Int(3, 5),
-                //    new Vector2Int(3, 6),
-                //    new Vector2Int(3, 7),
-                //};
-                //List<Vector2Int> minesList = new List<Vector2Int>()
-                //{
-                //    new Vector2Int(4, 1),
-                //    new Vector2Int(4, 2),
-                //    new Vector2Int(2, 2),
-                //    new Vector2Int(0, 5),
-                //    new Vector2Int(1, 5),
-                //    new Vector2Int(2, 5)
-                //};
-                #endregion
-                List<Vector2Int> minesList = new List<Vector2Int>()
-                {
-                    new Vector2Int(2, 0),
-                    new Vector2Int(0, 2),
-                    new Vector2Int(4, 4),
-                    new Vector2Int(0, 5),
-                    new Vector2Int(1, 5),
-                    new Vector2Int(2, 5),
-                    new Vector2Int(3, 7),
-                    new Vector2Int(5, 2),
-                    new Vector2Int(9, 3),
-                    new Vector2Int(10, 1),
-                    new Vector2Int(13, 5),
-                    new Vector2Int(13, 2),
-                    new Vector2Int(15, 7),
-                    new Vector2Int(9, 5),
-                    new Vector2Int(14, 1),
-                    new Vector2Int(7, 5),
-                    new Vector2Int(6, 2),
-                    new Vector2Int(7, 1),
-                    new Vector2Int(8, 3),
-                };
-                numberOfMines = minesList.Count;
-
-                IsFirstMove = true;
-                CurrentState = GridState.NotStarted;
-                numberOfRevealedCells = 0;
-                OnGridStateChanged.RemoveAllListeners();
-                RemainingUnflaggedMines = minesList.Count;
-
-                cells = new Cell[gridSize.x, gridSize.y];
-
-                if (isDebug) Debug.Log($"{cells.Length}");
-
-                for (int i = 0; i < gridSize.x; i++)
-                {
-                    for (int j = 0; j < gridSize.y; j++)
-                    {
-                        if (isDebug) Debug.Log($"{i}, {j}, {gridSize}");
-                        //Debug.Log($"{i < gridSize.x}");
-                        cells[i, j] = new Cell(new Vector2Int(i, j));
-                    }
-                }
-
-                for (int i = 0; i < minesList.Count; i++)
-                {
-                    SetMineAndAddCountToSurroundingCells(minesList[i]);
-                }
-            }
-        }
 
         protected override void RevealCell(Vector2Int coordinates, int sequenceCount)
         {

@@ -84,7 +84,7 @@ namespace MineSweeperRipeoff
         private void StartNewGame()
         {
             (var gridSize,var minesCount) = gameSettings.GetOptionsForDifficulty(CurrentDifficulty);
-            CurrentGrid.Initialize(gridSize, minesCount, CurrentGameMode, PlayerData.IsSpeedRunMode);
+            CurrentGrid = new Grid(gridSize, minesCount, CurrentGameMode, PlayerData.IsSpeedRunMode);
             UpdateParameters();
 
             GridDataSaver.DeleteSave(SavePath);
@@ -93,8 +93,7 @@ namespace MineSweeperRipeoff
         private void LoadExistingGrid()
         {
             GridSaveData gridSaveData = GridDataSaver.TryLoadGrid(SavePath);
-            CurrentGrid = new Grid();
-            CurrentGrid.Initialize(gridSaveData, CurrentGameMode, PlayerData.IsSpeedRunMode);
+            CurrentGrid = new Grid(gridSaveData, CurrentGameMode, PlayerData.IsSpeedRunMode);
             UpdateParameters();
             timer = gridSaveData.timer;
 

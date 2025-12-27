@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace MineSweeperRipeoff
+namespace MineSweeperRipeoff.Test
 {
     public class TestFieldCell : FieldCell
     {

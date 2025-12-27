@@ -86,7 +86,7 @@ namespace MineSweeperRipeoff
             {
                 Debug.Log("Testing Grid");
                 testCells = GenerateRandomGrid(gridSizeTarget, numberOfMinesTarget);
-                Debug.Log(testCells.GetLength(0) + ", " + testCells.GetLength(1));
+                //Debug.Log(testCells.GetLength(0) + ", " + testCells.GetLength(1));
                 gridSolver = new OptimizedGridSolver(testCells, numberOfMinesTarget);
                 startCell = await gridSolver.TrySolve();
             } while (gridSolver.CurrentState != GridState.Cleared);

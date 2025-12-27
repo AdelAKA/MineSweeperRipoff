@@ -90,10 +90,58 @@ namespace MineSweeperRipeoff
             return cellsCopy;
         }
 
-        public Grid()
+        public Grid() { }
+
+        // Used for generating a grid through the grid generator
+        public Grid(Vector2Int? gridSizeTraget, int? numberOfMinesTarget, GameMode gameMode, bool isSpeedRunMode)
         {
+            if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
+            if (numberOfMinesTarget.HasValue) this.numberOfMines = numberOfMinesTarget.Value;
+            this._currentGameMode = gameMode;
+            this._shouldDelay = !isSpeedRunMode;
+
+            ResetGrid();
+
+            Vector2Int startCell;
+            if (gameMode == GameMode.Chance)
+            {
+                cells = gridGenerator.GenerateRandomGrid(gridSize, numberOfMines);
+            }
+            else // No Chance Grid
+            {
+                var result = gridGenerator.GenerateNoChanceGrid(gridSize, numberOfMines);
+                (cells, startCell) = (result.Result.Item1, result.Result.Item2);
+                cells[startCell.x, startCell.y].MarkAsForceStartCell();
+            }
         }
 
+        // Used for loading a grid from saved data
+        public Grid(GridSaveData loadedGridData, GameMode gameMode, bool isSpeedRunMode)
+        {
+            this.gridSize = loadedGridData.gridSize;
+            this.numberOfMines = loadedGridData.numberOfMines;
+            this.RemainingUnflaggedMines = loadedGridData.remainingMines;
+            this.IsFirstMove = false;
+            this.CurrentState = GridState.Playing;
+            this.numberOfRevealedCells = loadedGridData.numberOfRevealedCells;
+            this._currentGameMode = gameMode;
+            this._shouldDelay = !isSpeedRunMode;
+            OnGridStateChanged.RemoveAllListeners();
+
+            //ResetGrid();
+
+            cells = new Cell[gridSize.x, gridSize.y];
+            for (int i = 0; i < gridSize.x; i++)
+            {
+                for (int j = 0; j < gridSize.y; j++)
+                {
+                    //revealedGrid[i, j] = new Cell(cells[i, j]);
+                    cells[i, j] = new Cell(loadedGridData.cells[i * gridSize.y + j]);
+                }
+            }
+        }
+
+        // Used to copy another grid
         public Grid(Cell[,] cellsCopy, int numberOfMines)
         {
             this.gridSize = new Vector2Int(cellsCopy.GetLength(0), cellsCopy.GetLength(1));
@@ -119,54 +167,6 @@ namespace MineSweeperRipeoff
             numberOfRevealedCells = 0;
             OnGridStateChanged.RemoveAllListeners();
             RemainingUnflaggedMines = numberOfMines;
-            Debug.Log(RemainingUnflaggedMines);
-        }
-
-        public virtual async void Initialize(Vector2Int? gridSizeTraget, int? numberOfMinesTarget, GameMode gameMode, bool isSpeedRunMode)
-        {
-            if (gridSizeTraget.HasValue) this.gridSize = gridSizeTraget.Value;
-            if (numberOfMinesTarget.HasValue) this.numberOfMines = numberOfMinesTarget.Value;
-            this._currentGameMode = gameMode;
-            this._shouldDelay = !isSpeedRunMode;
-
-            ResetGrid();
-
-            Vector2Int startCell;
-            if (gameMode == GameMode.Chance)
-            {
-                cells = gridGenerator.GenerateRandomGrid(gridSize, numberOfMines);
-            }
-            else // No Chance Grid
-            {
-                (cells, startCell) = await gridGenerator.GenerateNoChanceGrid(gridSize, numberOfMines);
-                cells[startCell.x, startCell.y].MarkAsForceStartCell();
-            }
-
-        }
-
-        public void Initialize(GridSaveData loadedGridData, GameMode gameMode, bool isSpeedRunMode)
-        {
-            this.gridSize = loadedGridData.gridSize;
-            this.numberOfMines = loadedGridData.numberOfMines;
-            this.RemainingUnflaggedMines = loadedGridData.remainingMines;
-            this.IsFirstMove = false;
-            this.CurrentState = GridState.Playing;
-            this.numberOfRevealedCells = loadedGridData.numberOfRevealedCells;
-            this._currentGameMode = gameMode;
-            this._shouldDelay = !isSpeedRunMode;
-            OnGridStateChanged.RemoveAllListeners();
-
-            //ResetGrid();
-
-            cells = new Cell[gridSize.x, gridSize.y];
-            for (int i = 0; i < gridSize.x; i++)
-            {
-                for (int j = 0; j < gridSize.y; j++)
-                {
-                    //revealedGrid[i, j] = new Cell(cells[i, j]);
-                    cells[i, j] = new Cell(loadedGridData.cells[i * gridSize.y + j]);
-                }
-            }
         }
 
         protected bool IsWithinRange(Vector2Int coordinates)
